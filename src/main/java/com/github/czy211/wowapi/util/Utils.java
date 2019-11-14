@@ -34,10 +34,10 @@ public class Utils {
         WIDGETS.put("FontString", "LayeredRegion");
         WIDGETS.put("FontInstance", "");
         WIDGETS.put("Font", "FontInstance");
-        WIDGETS.put("EditBox", "FontInstance");
-        WIDGETS.put("MessageFrame", "FontInstance");
-        WIDGETS.put("ScrollingMessageFrame", "FontInstance");
-        WIDGETS.put("SimpleHTML", "FontInstance");
+        WIDGETS.put("EditBox", "Frame");
+        WIDGETS.put("MessageFrame", "Frame");
+        WIDGETS.put("ScrollingMessageFrame", "Frame");
+        WIDGETS.put("SimpleHTML", "Frame");
         WIDGETS.put("Browser", "Frame");
         WIDGETS.put("Minimap", "Frame");
         WIDGETS.put("FogOfWarFrame", "Frame");
@@ -174,6 +174,10 @@ public class Utils {
                     result.append(line.replaceFirst("ScriptObject", "AnimationGroup")).append("\n\n");
                 } else if (line.startsWith("function FontInstance:")) {
                     result.append(line.replaceFirst("FontInstance", "FontString")).append("\n\n");
+                    result.append(line.replaceFirst("FontInstance", "EditBox")).append("\n\n");
+                    result.append(line.replaceFirst("FontInstance", "MessageFrame")).append("\n\n");
+                    result.append(line.replaceFirst("FontInstance", "ScrollingMessageFrame")).append("\n\n");
+                    result.append(line.replaceFirst("FontInstance", "SimpleHTML")).append("\n\n");
                 }
             }
         } catch (FileNotFoundException ex) {
