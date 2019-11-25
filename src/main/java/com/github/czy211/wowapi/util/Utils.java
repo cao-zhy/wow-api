@@ -19,24 +19,16 @@ public class Utils {
     }
 
     /**
-     * 判断是否为UI函数
+     * 判断是否跳过该函数
      *
-     * @param description 函数描述内容
-     * @return 如果是UI函数则返回true，否则返回false
+     * @param description 函数描述
+     * @return 如果是 UI 函数或 REMOVED 函数或 DEPRECATED 函数则返回 true，否则返回 false
      */
-    public static boolean isUIFunc(String description) {
-        return description.startsWith("UI ");
+    public static boolean skipFunc(String description) {
+        return description.startsWith("UI ") || description.startsWith("REMOVED ")
+                || description.startsWith("DEPRECATED ");
     }
 
-    /**
-     * 判断是否为已删除函数
-     *
-     * @param description 函数描述内容
-     * @return 如果已删除则返回true，否则返回false
-     */
-    public static boolean isRemovedFunc(String description) {
-        return description.startsWith("REMOVED ");
-    }
 
     /**
      * 判断函数页面是否不存在

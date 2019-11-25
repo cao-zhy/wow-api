@@ -57,7 +57,7 @@ public class Page {
                     }
                     // 获取dd元素的文本内容并将[]替换为{}，因为[]在注释中会被删除
                     String description = element.text().replaceAll("\\[", "{").replaceAll("]", "}");
-                    if (Utils.isUIFunc(description) || Utils.isRemovedFunc(description)) {
+                    if (Utils.skipFunc(description)) {
                         continue;
                     }
                     String url = Utils.pageNotExist(linkHref) ? "" : (BASE_URL + linkHref);
