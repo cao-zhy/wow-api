@@ -17,6 +17,7 @@ public class Page {
     private final String stopFuncName;
     private final String fileName;
     private String outputPath;
+    private long timestamp;
 
     public Page(String type, String path, String fileName) {
         this(type, path, fileName, "");
@@ -32,10 +33,14 @@ public class Page {
     /**
      * 爬取网页数据
      */
-    public void crawl() {
+    public String crawl() {
         try {
             StringBuilder content = new StringBuilder();
             Document document = Jsoup.connect(BASE_URL + path).get();
+
+            String lastRevision = document.getElementById("footer-info-lastmod").text().substring(29);
+            timestamp = Utils.getTimestamp(lastRevision);
+
             if ("function".equals(type)) {
                 // 获取所有dd元素
                 Elements elements = document.getElementsByTag("dd");
@@ -91,13 +96,10 @@ public class Page {
         } catch (IOException ex) {
             System.err.println("无法连接到 " + BASE_URL + path);
         }
+        return outputPath + "/" + fileName;
     }
 
-    public String getOutputPath() {
-        return outputPath;
-    }
-
-    public String getFileName() {
-        return fileName;
+    public long getTimestamp() {
+        return timestamp;
     }
 }

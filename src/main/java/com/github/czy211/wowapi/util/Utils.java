@@ -1,6 +1,10 @@
 package com.github.czy211.wowapi.util;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Utils {
@@ -51,7 +55,7 @@ public class Utils {
      * @param content 写入的内容
      */
     public static void writeData(String path, String fileName, String content) {
-        File file = new File(path + "/wow-api");
+        File file = new File(path);
         if (file.exists() || file.mkdir()) {
             try (PrintWriter output = new PrintWriter(file.getPath() + "/" + fileName)) {
                 output.print(content);
@@ -126,5 +130,11 @@ public class Utils {
             ex.printStackTrace();
         }
         return result.toString();
+    }
+
+    public static long getTimestamp(String dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, 'at' HH:mm.", Locale.ENGLISH);
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTime, formatter);
+        return localDateTime.toEpochSecond(ZoneOffset.of("+8"));
     }
 }
