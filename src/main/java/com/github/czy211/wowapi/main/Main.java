@@ -10,8 +10,8 @@ class Main {
 
         Page widgetAPI = new Page("function", "/Widget_API", "WidgetAPI.lua");
         widgetAPI.crawl();
-        String src = widgetAPI.getOutputPath() + "/wow-api/" + widgetAPI.getFileName();
-        Utils.addHeader(src, Utils.generateWidgetTypesAndFunc(src));
+        String srcFile = widgetAPI.getOutputPath() + "/wow-api/" + widgetAPI.getFileName();
+        Utils.addHeader(srcFile, Utils.getWidgetTypes() + "\n" + Utils.replaceFontInstance(srcFile));
 
         Page luaAPI = new Page("function", "/Lua_functions", "LuaAPI.lua");
         luaAPI.crawl();

@@ -1,0 +1,161 @@
+---@class Object
+Object = {}
+
+---@class Region:Object
+Region = {}
+
+---@class LayeredRegion:Region
+LayeredRegion = {}
+
+---@class ScriptObject
+ScriptObject = {}
+
+---@class Frame:Region
+Frame = {}
+
+---@class ControlPoint:Object
+ControlPoint = {}
+
+---@class Animation:Object
+Animation = {}
+
+---@class AnimationGroup:Object
+AnimationGroup = {}
+
+---@class Alpha:Animation
+Alpha = {}
+
+---@class Path:Animation
+Path = {}
+
+---@class Scale:Animation
+Scale = {}
+
+---@class LineScale:Animation
+LineScale = {}
+
+---@class Translation:Animation
+Translation = {}
+
+---@class LineTranslation:Animation
+LineTranslation = {}
+
+---@class Rotation:Animation
+Rotation = {}
+
+---@class TextureCoordTranslation:Animation
+TextureCoordTranslation = {}
+
+---@class Texture:LayeredRegion
+Texture = {}
+
+---@class MaskTexture:Texture
+MaskTexture = {}
+
+---@class Line:Texture
+Line = {}
+
+---@class FontString:LayeredRegion
+FontString = {}
+
+---@class FontInstance
+FontInstance = {}
+
+---@class Font:FontInstance
+Font = {}
+
+---@class EditBox:Frame
+EditBox = {}
+
+---@class MessageFrame:Frame
+MessageFrame = {}
+
+---@class ScrollingMessageFrame:Frame
+ScrollingMessageFrame = {}
+
+---@class SimpleHTML:Frame
+SimpleHTML = {}
+
+---@class Browser:Frame
+Browser = {}
+
+---@class Minimap:Frame
+Minimap = {}
+
+---@class FogOfWarFrame:Frame
+FogOfWarFrame = {}
+
+---@class Checkout:Frame
+Checkout = {}
+
+---@class ModelScene:Frame
+ModelScene = {}
+
+---@class MovieFrame:Frame
+MovieFrame = {}
+
+---@class ColorSelect:Frame
+ColorSelect = {}
+
+---@class StatusBar:Frame
+StatusBar = {}
+
+---@class OffScreenFrame:Frame
+OffScreenFrame = {}
+
+---@class Cooldown:Frame
+Cooldown = {}
+
+---@class ScrollFrame:Frame
+ScrollFrame = {}
+
+---@class UnitPositionFrame:Frame
+UnitPositionFrame = {}
+
+---@class GameTooltip:Frame
+GameTooltip = {}
+
+---@class Slider:Frame
+Slider = {}
+
+---@class WorldFrame:Frame
+WorldFrame = {}
+
+---@class ModelSceneActor:Frame
+ModelSceneActor = {}
+
+---@class Model:Frame
+Model = {}
+
+---@class Button:Frame
+Button = {}
+
+---@class POIFrame:Frame
+POIFrame = {}
+
+---@class PlayerModel:Model
+PlayerModel = {}
+
+---@class CinematicModel:Model
+CinematicModel = {}
+
+---@class CheckButton:Button
+CheckButton = {}
+
+---@class ItemButton:Button
+ItemButton = {}
+
+---@class DressUpModel:Model
+DressUpModel = {}
+
+---@class TabardModel:Model
+TabardModel = {}
+
+---@class ArchaeologyDigSite:POIFrame
+ArchaeologyDigSite = {}
+
+---@class ScenarioPOIFrame:POIFrame
+ScenarioPOIFrame = {}
+
+---@class QuestPOIFrame:POIFrame
+QuestPOIFrame = {}
