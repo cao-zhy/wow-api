@@ -53,7 +53,7 @@ class Function {
             if ("".equals(arg)) {
                 continue;
             }
-            // 使用{}包含描述内容
+            // 使用 {} 包含描述内容
             if ("setting0=normal".equals(arg)) {
                 arg = "setting";
                 result.append(arg);

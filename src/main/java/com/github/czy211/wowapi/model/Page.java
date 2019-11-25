@@ -42,20 +42,20 @@ public class Page {
             timestamp = Utils.getTimestamp(lastRevision);
 
             if ("function".equals(type)) {
-                // 获取所有dd元素
+                // 获取所有 dd 元素
                 Elements elements = document.getElementsByTag("dd");
                 for (Element element : elements) {
-                    // 获取dd元素的第一个超链接
+                    // 获取 dd 元素的第一个超链接
                     Element link = element.selectFirst("a");
                     if (link == null) {
                         continue;
                     }
-                    // 获取超链接href属性的字符串内容
+                    // 获取超链接 href 属性的字符串内容
                     String linkHref = link.attr("href");
                     if (!Utils.isAPIElement(linkHref)) {
                         continue;
                     }
-                    // 获取dd元素的文本内容并将[]替换为{}，因为[]在注释中会被删除
+                    // 获取dd元素的文本内容并将 [] 替换为 {}，因为 [] 在注释中会被删除
                     String description = element.text().replaceAll("\\[", "{").replaceAll("]", "}");
                     if (Utils.skipFunc(description)) {
                         continue;
@@ -73,7 +73,7 @@ public class Page {
                     int endPos = s.length() - (s.endsWith(")") ? 1 : 0);
                     // 描述中括号里的内容
                     String argString = s.substring(startPos, endPos);
-                    // 处理括号里的字符串，使之符合参数值的要求，还有不合法的参数会在Function类的toString方法中做进一步处理
+                    // 处理括号里的字符串，使之符合参数值的要求，还有不合法的参数会在 Function 类的 toString 方法中做进一步处理
                     String[] args = argString.replaceAll(" or |/|\\||\\\\", "_")
                             .replaceAll("\\{|}|\"|\\(|\\)|-|\\w+\\.| +|\\+", "").replaceAll("\\w+\\.{3}", "...")
                             .split(",");
@@ -83,10 +83,10 @@ public class Page {
                     content.append(function).append("\n");
                 }
             }
-            /* 获取当前文件路径，在IDE运行时返回class文件所在目录，即.../target/classes；在jar包中运行时返回jar包路径，
-               即.../xxx.jar */
+            /* 获取当前文件路径，在IDE运行时返回class文件所在目录，即 .../target/classes；在 jar 包中运行时返回 jar 包路径，
+               即 .../xxx.jar */
             String outputPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-            // 处理在jar包运行的情况
+            // 处理在 jar 包运行的情况
             if (outputPath.endsWith(".jar")) {
                 outputPath = outputPath.substring(0, outputPath.lastIndexOf("/") + 1);
             }

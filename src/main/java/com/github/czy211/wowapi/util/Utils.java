@@ -9,10 +9,10 @@ import java.util.Scanner;
 
 public class Utils {
     /**
-     * 判断是否为API元素
+     * 判断是否为 API 元素
      *
      * @param linkHref 链接的字符串内容
-     * @return 如果是API元素则返回true，否则返回false
+     * @return 如果是 API 元素则返回 true，否则返回 false
      */
     public static boolean isAPIElement(String linkHref) {
         return linkHref.startsWith("/API_") || pageNotExist(linkHref);
@@ -34,7 +34,7 @@ public class Utils {
      * 判断函数页面是否不存在
      *
      * @param linkHref 链接字符串内容
-     * @return 如果函数页面不存在则返回true，否则返回false
+     * @return 如果函数页面不存在则返回 true，否则返回 false
      */
     public static boolean pageNotExist(String linkHref) {
         return linkHref.startsWith("/index.php");
@@ -58,8 +58,8 @@ public class Utils {
     }
 
     /**
-     * 将内容添加到文件的顶部<br>
-     * 函数类型最好应该生成一个新文件，但因为EmmyLua的问题，部件类型和方法不再同一文件时，点击子类调用父类的方法可能会无法正确跳转
+     * 将内容添加到文件的顶部 <br>
+     * 函数类型最好应该生成一个新文件，但因为 EmmyLua 的问题，部件类型和方法不在同一文件时，点击子类调用父类的方法可能会无法正确跳转
      *
      * @param fileName 待写入的文件
      * @param content 写入的内容
