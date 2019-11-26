@@ -9,6 +9,8 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Page {
     private static final String BASE_URL = "https://wow.gamepedia.com";
@@ -82,7 +84,69 @@ public class Page {
                     Function function = new Function(description, url, name, arguments);
                     content.append(function).append("\n");
                 }
+            } else if ("handler".equals(type)) {
+                ArrayList<Widget> widgets = new ArrayList<>();
+                Set<String> allScriptTypes = new HashSet<>();
+                Elements elements = document.select("h2:has(span.mw-headline), h3:not(:contains(Inherits)), dd");
+                for (Element element : elements) {
+                    String text = element.text();
+                    // 如果文本内容是 References，则已完成遍历
+                    if ("References".equals(text)) {
+                        break;
+                    }
+                    // text 以 “On”、“Pre” 或 “Post” 开头时是 handler 方法
+                    if (text.startsWith("On") || text.startsWith("Pre") || text.startsWith("Post")) {
+                        Widget widget = widgets.get(widgets.size() - 1);
+                        // 获取 script type 名
+                        int end = text.length();
+                        if (text.contains("(")) {
+                            end = text.indexOf("(");
+                        } else if (text.contains("-")) {
+                            end = text.indexOf("-") - 1;
+                        }
+                        String scriptType = text.substring(0, end);
+                        widget.getScriptTypes().add(scriptType);
+                        // 添加到所有的脚本类型中
+                        allScriptTypes.add(scriptType);
+                    } else { // text 是 widget 名
+                        Widget widget = new Widget(text);
+                        widgets.add(widget);
+                    }
+                }
+
+                content.append("---@alias ScriptType string ");
+                for (String st : allScriptTypes) {
+                    content.append("|'\"").append(st).append("\"'");
+                }
+                content.append("\n\n");
+                for (Widget widget : widgets) {
+                    String name = widget.getName();
+
+                    content.append("---@alias ").append(name).append("ScriptType string ");
+                    for (String st : widget.getScriptTypes()) {
+                        content.append("|'\"").append(st).append("\"'");
+                    }
+                    // AnimationGroup、Animation、Frame 需要添加 ScriptObject 中的 ScriptType，因为它们没有继承 ScriptObject
+                    if ("AnimationGroup".equals(name) || "Animation".equals(name) || "Frame".equals(name)) {
+                        for (String st : widgets.get(0).getScriptTypes()) {
+                            content.append("|'\"").append(st).append("\"'");
+                        }
+                    }
+                    content.append("\n\n");
+
+                    content.append("---@param scriptType ScriptType\n");
+                    content.append("function ").append(name).append(":GetScript(scriptType) end\n\n");
+                    content.append("---@param scriptType ScriptType\n");
+                    content.append("function ").append(name).append(":HasScript(scriptType) end\n\n");
+                    content.append("---@param scriptType ").append(name).append("ScriptType\n");
+                    content.append("---@param handler function\n");
+                    content.append("function ").append(name).append(":HookScript(scriptType, handler) end\n\n");
+                    content.append("---@param scriptType ").append(name).append("ScriptType\n");
+                    content.append("---@param handler function\n");
+                    content.append("function ").append(name).append(":SetScript(scriptType, handler) end\n\n");
+                }
             }
+
             /* 获取当前文件路径，在IDE运行时返回class文件所在目录，即 .../target/classes；在 jar 包中运行时返回 jar 包路径，
                即 .../xxx.jar */
             String outputPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();

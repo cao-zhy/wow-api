@@ -17,5 +17,10 @@ class Main {
         Page luaAPI = new Page("function", "/Lua_functions", "LuaAPI.lua");
         output = luaAPI.crawl();
         Utils.addHeader(output, "--- timestamp: " + luaAPI.getTimestamp() + "\n\n");
+
+        Page widgetHandler = new Page("handler", "/Widget_handlers", "WidgetHandler.lua");
+        output = widgetHandler.crawl();
+        Utils.addHeader(output, "--- timestamp: " + widgetHandler.getTimestamp() + "\n\n" + Utils.getWidgetTypes()
+                + "\n\n");
     }
 }
