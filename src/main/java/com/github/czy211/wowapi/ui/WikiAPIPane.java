@@ -22,42 +22,40 @@ public class WikiAPIPane extends APIPane {
         getLabel().setText(page.getName());
         checkStatus();
 
-        Label status = getStatus();
         String fileName = page.getFileName();
         String outputFile = Utils.getOutputDirectory() + "/" + fileName;
         File file = new File(outputFile);
 
         Runnable runCheck = () -> {
             String url = Constants.WIKI_BASE_URL + page.getPath();
-            updateStatus(status, "检查更新中……");
+            updateStatus("检查更新中……");
             try {
                 Document document = Jsoup.connect(url).get();
                 long timestamp = Utils.getTimestamp(document);
                 if (!file.exists() || getTimestampFromFile(file) < timestamp) {
-                    updateStatus(status, "有新版本可下载");
+                    updateStatus("有新版本可下载");
                 } else {
-                    updateStatus(status, "已是最新版本        version: " + Utils.convertTimestampToString(timestamp));
+                    updateStatus("已是最新版本        version: " + Utils.convertTimestampToString(timestamp));
                 }
             } catch (IOException e) {
-                updateStatus(status, "连接失败 " + url);
+                updateStatus("连接失败 " + url);
                 e.printStackTrace();
             }
         };
         getCheck().setOnAction(event -> new Thread(runCheck).start());
 
         Runnable runDownload = () -> {
-            updateStatus(status, "下载中……");
+            updateStatus("下载中……");
             try {
                 String content = page.crawl();
                 if (content != null && !"".equals(content)) {
                     PrintWriter output = new PrintWriter(outputFile);
                     output.println(page.crawl());
-                    updateStatus(status, "下载完成        version: " + Utils.convertTimestampToString(page
-                            .getTimestamp()));
+                    updateStatus("下载完成        version: " + Utils.convertTimestampToString(page.getTimestamp()));
                     output.close();
                 }
             } catch (IOException e) {
-                updateStatus(status, "连接失败 " + Constants.WIKI_BASE_URL + page.getPath());
+                updateStatus("连接失败 " + Constants.WIKI_BASE_URL + page.getPath());
                 e.printStackTrace();
             }
         };

@@ -31,7 +31,7 @@ public abstract class APIPane extends HBox {
         status.setAlignment(Pos.CENTER);
     }
 
-    protected void updateStatus(Label status, String text) {
+    protected void updateStatus(String text) {
         Platform.runLater(() -> status.setText(text));
     }
 
