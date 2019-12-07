@@ -37,7 +37,8 @@ public class FXMLAPIPane extends APIPane {
                     updateStatus(status, "已是最新版本        build: " + build);
                 }
             } catch (IOException e) {
-                updateStatus(status, "无法连接到 " + url);
+                updateStatus(status, "连接失败 " + url);
+                e.printStackTrace();
             }
         };
         getCheck().setOnAction(event -> new Thread(runCheck).start());
@@ -48,7 +49,7 @@ public class FXMLAPIPane extends APIPane {
                 page.download();
                 updateStatus(status, "下载完成        build: " + page.getBuild());
             } catch (IOException e) {
-                updateStatus(status, "无法连接到 " + e.getMessage());
+                updateStatus(status, "连接失败 " + e.getMessage());
                 e.printStackTrace();
             }
         };

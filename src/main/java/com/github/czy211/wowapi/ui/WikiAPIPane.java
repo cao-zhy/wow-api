@@ -39,7 +39,8 @@ public class WikiAPIPane extends APIPane {
                     updateStatus(status, "已是最新版本        version: " + Utils.convertTimestampToString(timestamp));
                 }
             } catch (IOException e) {
-                updateStatus(status, "无法连接到 " + url);
+                updateStatus(status, "连接失败 " + url);
+                e.printStackTrace();
             }
         };
         getCheck().setOnAction(event -> new Thread(runCheck).start());
@@ -56,7 +57,8 @@ public class WikiAPIPane extends APIPane {
                     output.close();
                 }
             } catch (IOException e) {
-                updateStatus(status, "无法连接到 " + Constants.WIKI_BASE_URL + page.getPath());
+                updateStatus(status, "连接失败 " + Constants.WIKI_BASE_URL + page.getPath());
+                e.printStackTrace();
             }
         };
         getDownload().setOnAction(event -> new Thread(runDownload).start());
