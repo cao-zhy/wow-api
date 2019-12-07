@@ -6,9 +6,10 @@ import com.github.czy211.wowapi.util.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
 
 public class FXMLAPIPane extends APIPane {
     private FXMLPage page;
@@ -87,8 +88,9 @@ public class FXMLAPIPane extends APIPane {
     }
 
     private int getBuildFromFile(File file) {
-        try (Scanner in = new Scanner(file)) {
-            return Integer.parseInt(in.nextLine().substring(Constants.COMMENT_BUILD.length()));
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            return Integer.parseInt(reader.readLine().substring(Constants.COMMENT_BUILD.length()));
         } catch (IOException e) {
             e.printStackTrace();
         }
