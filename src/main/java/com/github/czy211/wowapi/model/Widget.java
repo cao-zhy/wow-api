@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Widget {
     private String name;
-    private ArrayList<String> scriptTypes = new ArrayList<>();
+    private ArrayList<String> handlers = new ArrayList<>();
 
     public Widget(String name) {
         this.name = name;
@@ -14,15 +14,7 @@ public class Widget {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ArrayList<String> getScriptTypes() {
-        return scriptTypes;
-    }
-
-    public void setScriptTypes(ArrayList<String> scriptTypes) {
-        this.scriptTypes = scriptTypes;
+    public ArrayList<String> getHandlers() {
+        return handlers;
     }
 }
