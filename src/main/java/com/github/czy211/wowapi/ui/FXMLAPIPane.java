@@ -13,6 +13,7 @@ import java.util.Scanner;
 
 public class FXMLAPIPane extends APIPane {
     private FXMLPage page;
+    private String[] statusText;
 
     public FXMLAPIPane(FXMLPage page) {
         this.page = page;
@@ -28,7 +29,7 @@ public class FXMLAPIPane extends APIPane {
             try {
                 Document document = Jsoup.connect(url).get();
                 int build = Utils.getBuild(document);
-                int statusType = Integer.parseInt(getStatusType()[0]);
+                int statusType = getStatusType();
                 if (statusType == 0 || statusType == 2 || getBuildFromFile(new File(
                         Utils.getOutputDirectory() + "/" + page.getFileNames()[0])) < build) {
                     updateStatus(status, "有新版本可下载");
@@ -56,12 +57,11 @@ public class FXMLAPIPane extends APIPane {
 
     @Override
     public void checkStatus() {
-        Label status = getStatus();
-        String[] statusType = getStatusType();
-        status.setText(statusType[1]);
+        int statusType = getStatusType();
+        getStatus().setText(statusText[statusType]);
     }
 
-    private String[] getStatusType() {
+    private int getStatusType() {
         StringBuilder text = new StringBuilder();
         int build = -1;
         boolean buildIsDiff = false;
@@ -78,12 +78,13 @@ public class FXMLAPIPane extends APIPane {
                 build = fileBuild;
             }
         }
+        statusText = new String[]{text + "不存在", "build: " + build, "版本不一致"};
         if (text.length() > 0) {
-            return new String[]{"0", text + "不存在"};
+            return 0;
         } else if (buildIsDiff) {
-            return new String[]{"2", "版本不一致"};
+            return 2;
         }
-        return new String[]{"1", "build: " + build};
+        return 1;
     }
 
     private int getBuildFromFile(File file) {
