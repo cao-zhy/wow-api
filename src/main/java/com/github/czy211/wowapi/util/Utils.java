@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class Utils {
@@ -113,11 +114,14 @@ public class Utils {
 
     public static String getOutputDirectory() {
         String path = getPath();
-        File file = new File(path + "outputDirectory");
+        File file = new File(path + "config.properties");
         if (file.exists()) {
-            try (Scanner in = new Scanner(file)) {
-                return in.nextLine();
-            } catch (FileNotFoundException e) {
+            Properties properties = new Properties();
+            try {
+                InputStream inputStream = new FileInputStream(file);
+                properties.load(inputStream);
+                return properties.getProperty("outputPath");
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

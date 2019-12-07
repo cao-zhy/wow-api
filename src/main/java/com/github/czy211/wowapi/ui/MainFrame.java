@@ -37,9 +37,10 @@ public class MainFrame extends Application {
         pathPane.getChoose().setOnAction(event -> {
             File file = chooser.showDialog(primaryStage);
             if (file != null) {
-                pathPane.getPath().setText(file.getPath());
-                try (PrintWriter output = new PrintWriter(Utils.getPath() + "outputDirectory")) {
-                    output.print(file.getPath());
+                String outputPath = file.getPath().replaceAll("\\\\", "/");
+                pathPane.getPath().setText(outputPath);
+                try (PrintWriter output = new PrintWriter(Utils.getPath() + "config.properties")) {
+                    output.println("outputPath=" + outputPath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
