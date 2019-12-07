@@ -39,7 +39,11 @@ public class MainFrame extends Application {
             if (file != null) {
                 String outputPath = file.getPath().replaceAll("\\\\", "/");
                 pathPane.getPath().setText(outputPath);
-                try (PrintWriter output = new PrintWriter(Utils.getPath() + "config.properties")) {
+                File configPath = new File(Utils.getConfigPath());
+                if (!configPath.exists()) {
+                    configPath.mkdirs();
+                }
+                try (PrintWriter output = new PrintWriter(configPath.getPath() + "/config.properties")) {
                     output.println("outputPath=" + outputPath);
                 } catch (IOException e) {
                     e.printStackTrace();

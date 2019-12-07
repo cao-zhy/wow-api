@@ -113,8 +113,7 @@ public class Utils {
     }
 
     public static String getOutputDirectory() {
-        String path = getPath();
-        File file = new File(path + "config.properties");
+        File file = new File(getConfigPath() + "config.properties");
         if (file.exists()) {
             Properties properties = new Properties();
             try {
@@ -125,14 +124,19 @@ public class Utils {
                 e.printStackTrace();
             }
         }
-        return path;
+        return getClassPathParent();
     }
 
-    public static String getPath() {
+    public static String getConfigPath() {
+        String path = getClassPathParent();
+        return path + "conf/";
+    }
+
+    private static String getClassPathParent() {
         String path = Utils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         if (path.endsWith(".jar")) {
             path = path.substring(0, path.lastIndexOf("/") + 1);
         }
-        return path;
+        return path.substring(0, path.lastIndexOf("/", path.length() - 2) + 1);
     }
 }
