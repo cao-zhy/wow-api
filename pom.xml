@@ -39,7 +39,6 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>com.github.czy211.wowapi.ui.MainFrame</mainClass>
-                            <classpathPrefix>lib</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
