@@ -1,6 +1,7 @@
 package com.github.czy211.wowapi.ui;
 
 import com.github.czy211.wowapi.constant.Constants;
+import com.github.czy211.wowapi.i18n.I18n;
 import com.github.czy211.wowapi.model.FXMLPage;
 import com.github.czy211.wowapi.util.Utils;
 import org.jsoup.Jsoup;
@@ -24,31 +25,31 @@ public class FXMLAPIPane extends APIPane {
 
         Runnable runCheck = () -> {
             String url = Constants.FXML_BASE_URL + "/live";
-            updateStatus("检查更新中……");
+            updateStatus(I18n.getText("status_checking_for_update"));
             try {
                 Document document = Jsoup.connect(url).get();
                 int build = Utils.getBuild(document);
                 int statusType = getStatusType();
                 if (statusType == 0 || statusType == 2 || getBuildFromFile(new File(
                         Utils.getOutputDirectory() + "/" + page.getFileNames()[0])) < build) {
-                    updateStatus("有新版本可下载");
+                    updateStatus(I18n.getText("status_update_available"));
                 } else {
-                    updateStatus("已是最新版本        build: " + build);
+                    updateStatus(I18n.getText("status_latest_build", build));
                 }
             } catch (IOException e) {
-                updateStatus("连接失败 " + url);
+                updateStatus(I18n.getText("status_connect_fail", url));
                 e.printStackTrace();
             }
         };
         getCheck().setOnAction(event -> new Thread(runCheck).start());
 
         Runnable runDownload = () -> {
-            updateStatus("下载中……");
+            updateStatus(I18n.getText("status_downloading"));
             try {
                 page.download();
-                updateStatus("下载完成        build: " + page.getBuild());
+                updateStatus(I18n.getText("status_fxml_download_finished", page.getBuild()));
             } catch (IOException e) {
-                updateStatus("连接失败 " + e.getMessage());
+                updateStatus(I18n.getText("status_connect_fail", e.getMessage()));
                 e.printStackTrace();
             }
         };
@@ -78,7 +79,8 @@ public class FXMLAPIPane extends APIPane {
                 build = fileBuild;
             }
         }
-        statusText = new String[]{text + "不存在", "build: " + build, "版本不一致"};
+        statusText = new String[]{I18n.getText("status_file_not_exist", text), "build: " + build,
+                I18n.getText("status_version_different")};
         if (text.length() > 0) {
             return 0;
         } else if (buildIsDiff) {

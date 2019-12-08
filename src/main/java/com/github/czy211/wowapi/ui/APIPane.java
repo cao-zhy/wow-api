@@ -1,5 +1,6 @@
 package com.github.czy211.wowapi.ui;
 
+import com.github.czy211.wowapi.i18n.I18n;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,8 +21,8 @@ public abstract class APIPane extends HBox {
         setAlignment(Pos.CENTER_LEFT);
         label = new Label();
         status = new Label();
-        check = new Button("检查更新");
-        download = new Button("下载");
+        check = new Button(I18n.getText("ui_button_check_for_update"));
+        download = new Button(I18n.getText("ui_button_download"));
         getChildren().addAll(label, status, check, download);
 
         label.setMaxWidth(120);

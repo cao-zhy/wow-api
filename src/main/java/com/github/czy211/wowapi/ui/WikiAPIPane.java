@@ -1,6 +1,7 @@
 package com.github.czy211.wowapi.ui;
 
 import com.github.czy211.wowapi.constant.Constants;
+import com.github.czy211.wowapi.i18n.I18n;
 import com.github.czy211.wowapi.model.WikiPage;
 import com.github.czy211.wowapi.util.Utils;
 import javafx.scene.control.Label;
@@ -28,34 +29,35 @@ public class WikiAPIPane extends APIPane {
 
         Runnable runCheck = () -> {
             String url = Constants.WIKI_BASE_URL + page.getPath();
-            updateStatus("检查更新中……");
+            updateStatus(I18n.getText("status_checking_for_update"));
             try {
                 Document document = Jsoup.connect(url).get();
                 long timestamp = Utils.getTimestamp(document);
                 if (!file.exists() || getTimestampFromFile(file) < timestamp) {
-                    updateStatus("有新版本可下载");
+                    updateStatus(I18n.getText("status_update_available"));
                 } else {
-                    updateStatus("已是最新版本        version: " + Utils.convertTimestampToString(timestamp));
+                    updateStatus(I18n.getText("status_latest_version", Utils.convertTimestampToString(timestamp)));
                 }
             } catch (IOException e) {
-                updateStatus("连接失败 " + url);
+                updateStatus(I18n.getText("status_connect_fail", url));
                 e.printStackTrace();
             }
         };
         getCheck().setOnAction(event -> new Thread(runCheck).start());
 
         Runnable runDownload = () -> {
-            updateStatus("下载中……");
+            updateStatus(I18n.getText("status_downloading"));
             try {
                 String content = page.crawl();
                 if (content != null && !"".equals(content)) {
                     PrintWriter output = new PrintWriter(outputFile);
                     output.println(page.crawl());
-                    updateStatus("下载完成        version: " + Utils.convertTimestampToString(page.getTimestamp()));
+                    updateStatus(I18n.getText("status_wiki_download_finished",
+                            Utils.convertTimestampToString(page.getTimestamp())));
                     output.close();
                 }
             } catch (IOException e) {
-                updateStatus("连接失败 " + Constants.WIKI_BASE_URL + page.getPath());
+                updateStatus(I18n.getText("status_connect_fail", Constants.WIKI_BASE_URL + page.getPath()));
                 e.printStackTrace();
             }
         };
@@ -68,7 +70,7 @@ public class WikiAPIPane extends APIPane {
         String fileName = page.getFileName();
         File file = new File(Utils.getOutputDirectory() + "/" + fileName);
         if (!file.exists()) {
-            status.setText(fileName + " 不存在");
+            status.setText(I18n.getText("status_file_not_exist", fileName + " "));
         } else {
             status.setText("version: " + Utils.convertTimestampToString(getTimestampFromFile(file)));
         }

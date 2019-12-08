@@ -1,5 +1,6 @@
 package com.github.czy211.wowapi.ui;
 
+import com.github.czy211.wowapi.i18n.I18n;
 import com.github.czy211.wowapi.util.Utils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,10 +21,10 @@ public class PathPane extends HBox {
         setPadding(new Insets(10));
         setSpacing(5);
         setAlignment(Pos.CENTER_LEFT);
-        Label label = new Label("下载位置：");
+        Label label = new Label(I18n.getText("ui_label_download_directory"));
         path = new TextField();
-        choose = new Button("选择文件夹");
-        Button open = new Button("打开文件夹");
+        choose = new Button(I18n.getText("ui_button_select_directory"));
+        Button open = new Button(I18n.getText("ui_button_open_directory"));
         getChildren().addAll(label, path, choose, open);
         setHgrow(path, Priority.ALWAYS);
 
