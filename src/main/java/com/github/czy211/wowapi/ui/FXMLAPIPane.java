@@ -100,8 +100,7 @@ public class FXMLAPIPane extends APIPane {
      * @return build 号
      */
     private int getBuildFromFile(File file) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             return Integer.parseInt(reader.readLine().substring(Constants.COMMENT_BUILD.length()));
         } catch (IOException e) {
             e.printStackTrace();
