@@ -90,31 +90,61 @@ public class Utils {
         return result.toString();
     }
 
+    /**
+     * 获取远程的时间戳
+     *
+     * @param document 远程文档内容
+     * @return 时间戳
+     */
     public static long getTimestamp(Document document) {
         String lastRevision = document.getElementById("footer-info-lastmod").text().substring(29);
         return Utils.convertStringToTimestamp(lastRevision);
     }
 
+    /**
+     * 把日期时间字符串转换为时间戳
+     *
+     * @param dateTime 日期时间字符串
+     * @return 时间戳
+     */
     public static long convertStringToTimestamp(String dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, 'at' HH:mm.", Locale.ENGLISH);
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime, formatter);
         return localDateTime.toEpochSecond(ZoneOffset.of("+8"));
     }
 
+    /**
+     * 把时间戳转换为日期时间字符串
+     *
+     * @param timestamp 时间戳
+     * @return 日期时间字符串
+     */
     public static String convertTimestampToString(long timestamp) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.of("+8"));
         return formatter.format(localDateTime);
     }
 
+    /**
+     * 获取远程的 build 号
+     *
+     * @param document 远程文档内容
+     * @return build 号
+     */
     public static int getBuild(Document document) {
         String build = document.getElementsByTag("title").text().substring(17, 22);
         return Integer.parseInt(build);
     }
 
+    /**
+     * 获取下载位置
+     *
+     * @return 下载位置
+     */
     public static String getOutputDirectory() {
         File file = new File(getConfigPath() + "config.properties");
         if (file.exists()) {
+            // 配置文件存在时，使用配置的下载位置
             Properties properties = new Properties();
             try {
                 InputStream inputStream = new FileInputStream(file);
@@ -124,16 +154,29 @@ public class Utils {
                 e.printStackTrace();
             }
         }
+        // 配置文件不存在时，使用默认位置：类路径的父目录
         return getClassPathParent();
     }
 
+    /**
+     * 获取配置文件所在文件夹
+     *
+     * @return 配置文件所在文件夹
+     */
     public static String getConfigPath() {
+        // 类路径同级的 conf 文件夹
         String path = getClassPathParent();
         return path + "conf/";
     }
 
+    /**
+     * 获取类路径的父目录
+     *
+     * @return 类路径的父目录
+     */
     private static String getClassPathParent() {
         String path = Utils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        // 使用 jar 包运行的情况
         if (path.endsWith(".jar")) {
             path = path.substring(0, path.lastIndexOf("/") + 1);
         }

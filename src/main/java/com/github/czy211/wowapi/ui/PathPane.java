@@ -26,12 +26,16 @@ public class PathPane extends HBox {
         choose = new Button(I18n.getText("ui_button_select_directory"));
         Button open = new Button(I18n.getText("ui_button_open_directory"));
         getChildren().addAll(label, path, choose, open);
+        // 设置路径输入框自适应宽度
         setHgrow(path, Priority.ALWAYS);
 
+        // 路径输入框不可编辑
         path.setEditable(false);
+        // 路径输入框不可被聚焦
         path.setFocusTraversable(false);
         path.setText(Utils.getOutputDirectory());
 
+        // 打开下载文件夹
         open.setOnAction(event -> {
             File file = new File(path.getText());
             Runtime runtime = Runtime.getRuntime();

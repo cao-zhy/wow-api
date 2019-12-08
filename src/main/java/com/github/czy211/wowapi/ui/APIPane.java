@@ -23,31 +23,49 @@ public abstract class APIPane extends HBox {
         Button download = new Button(I18n.getText("ui_button_download"));
         getChildren().addAll(label, status, check, download);
 
+        // 使所有 label 具有相同的宽度
         label.setMaxWidth(120);
         setHgrow(label, Priority.ALWAYS);
+        // 使 status 具有最大宽度
         status.setMaxWidth(Double.MAX_VALUE);
         setHgrow(status, Priority.ALWAYS);
         status.setAlignment(Pos.CENTER);
 
+        // 启动一个新的线程来检查更新
         check.setOnAction(event -> new Thread(() -> {
             updateStatus(I18n.getText("status_checking_for_update"));
             checkForUpdate();
         }).start());
 
+        // 启动一个新的线程来下载
         download.setOnAction(event -> new Thread(() -> {
             updateStatus(I18n.getText("status_downloading"));
             download();
         }).start());
     }
 
+    /**
+     * 使用 FX application 线程更新状态标签内容
+     *
+     * @param text 状态标签内容
+     */
     protected void updateStatus(String text) {
         Platform.runLater(() -> status.setText(text));
     }
 
+    /**
+     * 检查状态
+     */
     public abstract void checkStatus();
 
+    /**
+     * 检查更新
+     */
     public abstract void checkForUpdate();
 
+    /**
+     * 下载
+     */
     public abstract void download();
 
     public Label getLabel() {

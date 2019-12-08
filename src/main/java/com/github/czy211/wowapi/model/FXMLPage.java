@@ -24,6 +24,7 @@ public class FXMLPage {
 
     public void download() throws IOException {
         for (String fileName : fileNames) {
+            // 获取远程 build 号
             Document document = Jsoup.connect(Constants.FXML_BASE_URL + "/live").get();
             build = Utils.getBuild(document);
             URL url;
@@ -34,6 +35,7 @@ public class FXMLPage {
             }
             InputStream inputStream;
             try {
+                // 读取文件内容，需要添加 header 属性 “Referer” 和 “User-Agent” 才能访问
                 URLConnection conn = url.openConnection();
                 conn.setRequestProperty("Referer", Constants.FXML_BASE_URL + "/" + build);
                 conn.setRequestProperty("User-Agent", Constants.USER_AGENT);
@@ -41,8 +43,10 @@ public class FXMLPage {
             } catch (IOException e) {
                 throw new IOException(url.getHost() + url.getFile(), e);
             }
+            // 将读取的文件内容写入文件
             try (DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(Utils.getOutputDirectory()
                     + "/" + fileName))) {
+                // 添加 build 号
                 outputStream.writeBytes(Constants.COMMENT_BUILD + build + "\n\n");
                 byte[] buffer = new byte[1000];
                 int readBytes;

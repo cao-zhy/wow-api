@@ -1,24 +1,29 @@
 <assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <!--特定 assembly 的符号名称，其值会附加在生成的存档文件名后面-->
     <id>bin</id>
+    <!--存档格式-->
     <formats>
         <format>zip</format>
     </formats>
-    <includeBaseDirectory>true</includeBaseDirectory>
+    <!--依赖项集合-->
     <dependencySets>
         <dependencySet>
+            <!--不将生成的项目 jar 包包含在依赖项中，因为生成的 jar 包是不可执行的-->
             <useProjectArtifact>false</useProjectArtifact>
+            <!--依赖项存放路径-->
             <outputDirectory>lib</outputDirectory>
-            <unpack>false</unpack>
         </dependencySet>
     </dependencySets>
+    <!--文件集合-->
     <fileSets>
         <fileSet>
             <directory>src/main/bin</directory>
             <outputDirectory>bin</outputDirectory>
         </fileSet>
         <fileSet>
+            <!--把构建目录中的 jar 包复制到 lib 文件夹，这里的 jar 包是通过 maven-jar-plugin 生成的可执行 jar 包-->
             <directory>${project.build.directory}</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>

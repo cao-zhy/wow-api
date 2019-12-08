@@ -17,8 +17,10 @@
     </dependencies>
 
     <build>
+        <!--指定资源文件夹-->
         <resources>
             <resource>
+                <!--把 LICENSE 文件复制到 META-INF 文件夹中-->
                 <directory>${project.basedir}</directory>
                 <targetPath>META-INF</targetPath>
                 <includes>
@@ -30,6 +32,7 @@
             </resource>
         </resources>
         <plugins>
+            <!--使用 maven-jar-plugin 打包成可执行 jar 包-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -37,12 +40,15 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <!--在 MANIFEST.MF 文件中添加 Class-Path 属性-->
                             <addClasspath>true</addClasspath>
+                            <!--在 MANIFEST.MF 文件中添加 Main-Class 属性-->
                             <mainClass>com.github.czy211.wowapi.ui.MainFrame</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
+            <!--使用 maven-assembly-plugin 插件打包成 zip 包-->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.2.0</version>

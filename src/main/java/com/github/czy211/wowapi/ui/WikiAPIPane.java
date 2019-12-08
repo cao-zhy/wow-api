@@ -30,9 +30,11 @@ public class WikiAPIPane extends APIPane {
         File file = new File(outputFile);
         String url = Constants.WIKI_BASE_URL + page.getPath();
         try {
+            // 获取远程的时间戳
             Document document = Jsoup.connect(url).get();
             long timestamp = Utils.getTimestamp(document);
             if (!file.exists() || getTimestampFromFile(file) < timestamp) {
+                // 如果文件不存在或本地的时间戳小于远程的时间戳，则提示可更新
                 updateStatus(I18n.getText("status_update_available"));
             } else {
                 updateStatus(I18n.getText("status_latest_version") + "        version: "
@@ -51,8 +53,10 @@ public class WikiAPIPane extends APIPane {
         try {
             String content = page.crawl();
             if (content != null && !"".equals(content)) {
+                // 内容不为空时，才创建文件并写入内容
                 PrintWriter output = new PrintWriter(outputFile);
-                output.println(page.crawl());
+                output.println(content);
+                // 更新状态标签文字内容
                 updateStatus(I18n.getText("status_download_finished") + "        version: "
                         + Utils.convertTimestampToString(page.getTimestamp()));
                 output.close();
@@ -75,6 +79,12 @@ public class WikiAPIPane extends APIPane {
         }
     }
 
+    /**
+     * 获取本地文件的时间戳
+     *
+     * @param file 本地文件
+     * @return 时间戳
+     */
     private long getTimestampFromFile(File file) {
         try (Scanner in = new Scanner(file)) {
             return Long.parseLong(in.nextLine().substring(Constants.COMMENT_TIMESTAMP.length()));

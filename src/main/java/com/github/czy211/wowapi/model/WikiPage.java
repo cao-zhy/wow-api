@@ -24,6 +24,14 @@ public class WikiPage {
         this(path, name, fileName, "");
     }
 
+    /**
+     * 构造方法
+     *
+     * @param path 页面路径
+     * @param name 标签名
+     * @param fileName 文件名
+     * @param stopFuncName 遍历停止的函数名
+     */
     public WikiPage(String path, String name, String fileName, String stopFuncName) {
         this.path = path;
         this.name = name;
@@ -117,9 +125,11 @@ public class WikiPage {
                 Function function = new Function(description, url, name, arguments);
                 content.append(function).append("\n");
             }
+            // 添加所有 namespace
             for (String namespace : namespaces) {
                 content.append(namespace).append(" = {}\n");
             }
+            // 添加有两个父类的 Widget 继承的函数
             if ("WidgetAPI.lua".equals(fileName)) {
                 content.append(Utils.getParentFunctions(content.toString())).append("\n");
             }

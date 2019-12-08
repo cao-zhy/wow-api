@@ -26,9 +26,12 @@ public class FXMLAPIPane extends APIPane {
     public void checkForUpdate() {
         String url = Constants.FXML_BASE_URL + "/live";
         try {
+            // 获取远程 build 号
             Document document = Jsoup.connect(url).get();
             int build = Utils.getBuild(document);
+            // 获取状态类型
             int statusType = getStatusType();
+            // 有文件不存在或版本不一致或本地 build 号小于远程 build 号时提示可以更新
             if (statusType == 0 || statusType == 2 || getBuildFromFile(new File(
                     Utils.getOutputDirectory() + "/" + page.getFileNames()[0])) < build) {
                 updateStatus(I18n.getText("status_update_available"));
@@ -58,6 +61,11 @@ public class FXMLAPIPane extends APIPane {
         getStatus().setText(statusText[statusType]);
     }
 
+    /**
+     * 获取状态类型
+     *
+     * @return 状态类型
+     */
     private int getStatusType() {
         StringBuilder text = new StringBuilder();
         int build = -1;
@@ -78,13 +86,22 @@ public class FXMLAPIPane extends APIPane {
         statusText = new String[]{I18n.getText("status_file_not_exist", text), "build: " + build,
                 I18n.getText("status_version_different")};
         if (text.length() > 0) {
+            // 有文件不存在
             return 0;
         } else if (buildIsDiff) {
+            // 版本不一致
             return 2;
         }
+        // 文件都存在且版本一致
         return 1;
     }
 
+    /**
+     * 获取本地文件的 build 号
+     *
+     * @param file 本地文件
+     * @return build 号
+     */
     private int getBuildFromFile(File file) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
