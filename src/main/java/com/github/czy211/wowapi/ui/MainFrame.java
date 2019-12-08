@@ -47,13 +47,8 @@ public class MainFrame extends Application {
                 String outputPath = file.getPath().replaceAll("\\\\", "/");
                 // 更新路径输入框的内容
                 pathPane.getPath().setText(outputPath);
-                // 获取配置文件路径
-                File configPath = new File(Utils.getConfigPath());
-                if (!configPath.exists()) {
-                    configPath.mkdirs();
-                }
                 // 在配置文件路径下创建配置文件
-                try (PrintWriter output = new PrintWriter(configPath.getPath() + "/config.properties")) {
+                try (PrintWriter output = new PrintWriter(Utils.getConfigPath() + "config.properties")) {
                     output.println("outputPath=" + outputPath);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -67,6 +62,16 @@ public class MainFrame extends Application {
                 }
             }
         });
+
+        // 创建 conf 文件夹和 downloads 文件夹
+        File file = new File(Utils.getConfigPath());
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        file = new File(Utils.getDownloadsPath());
+        if (!file.exists()) {
+            file.mkdir();
+        }
 
         Scene scene = new Scene(mainPane, MIN_WIDTH, MIN_HEIGHT);
         // 设置窗口的最小尺寸

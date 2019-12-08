@@ -154,8 +154,8 @@ public class Utils {
                 e.printStackTrace();
             }
         }
-        // 配置文件不存在时，使用默认位置：类路径的父目录
-        return getClassPathParent();
+        // 配置文件不存在时，使用默认下载位置
+        return getDownloadsPath();
     }
 
     /**
@@ -165,8 +165,17 @@ public class Utils {
      */
     public static String getConfigPath() {
         // 类路径同级的 conf 文件夹
-        String path = getClassPathParent();
-        return path + "conf/";
+        return getClassPathParent() + "conf/";
+    }
+
+    /**
+     * 获取默认下载位置
+     *
+     * @return 默认下载位置
+     */
+    public static String getDownloadsPath() {
+        // 类路径同级的 downloads 文件夹
+        return getClassPathParent() + "downloads";
     }
 
     /**
