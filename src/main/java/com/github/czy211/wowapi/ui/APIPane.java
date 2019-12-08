@@ -2,6 +2,9 @@ package com.github.czy211.wowapi.ui;
 
 import com.github.czy211.wowapi.i18n.I18n;
 import com.github.czy211.wowapi.model.APIPage;
+import com.github.czy211.wowapi.model.FXMLPage;
+import com.github.czy211.wowapi.model.WikiPage;
+import com.github.czy211.wowapi.util.Utils;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+
+import java.io.IOException;
 
 public abstract class APIPane extends HBox {
     private Label status;
@@ -40,7 +45,19 @@ public abstract class APIPane extends HBox {
         // 启动一个新的线程来下载
         download.setOnAction(event -> new Thread(() -> {
             updateStatus(I18n.getText("status_downloading"));
-            download();
+            try {
+                page.download();
+                if (page instanceof FXMLPage) {
+                    updateStatus(I18n.getText("status_download_finished") + "        build: "
+                            + ((FXMLPage) page).getBuild());
+                } else if (page instanceof WikiPage) {
+                    updateStatus(I18n.getText("status_download_finished") + "        version: "
+                            + Utils.convertTimestampToString(((WikiPage) page).getTimestamp()));
+                }
+            } catch (IOException e) {
+                updateStatus(e.getMessage());
+                e.printStackTrace();
+            }
         }).start());
     }
 
@@ -62,9 +79,4 @@ public abstract class APIPane extends HBox {
      * 检查更新
      */
     public abstract void checkForUpdate();
-
-    /**
-     * 下载
-     */
-    public abstract void download();
 }

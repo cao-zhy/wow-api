@@ -1,6 +1,7 @@
 package com.github.czy211.wowapi.model;
 
 import com.github.czy211.wowapi.constant.Constants;
+import com.github.czy211.wowapi.i18n.I18n;
 import com.github.czy211.wowapi.util.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -44,7 +45,7 @@ public class FXMLPage extends APIPage {
                     content.append(line).append("\n");
                 }
             } catch (IOException e) {
-                throw new IOException(url.getHost() + url.getFile(), e);
+                throw new IOException(I18n.getText("status_connect_fail", url.getHost() + url.getFile(), e));
             }
             // 内容不为空时，才创建文件并写入内容
             if (content.length() > 0) {

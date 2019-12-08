@@ -45,14 +45,6 @@ public class WikiAPIPane extends APIPane {
     }
 
     @Override
-    public void download() {
-        page.download();
-        // 更新状态标签内容
-        updateStatus(I18n.getText("status_download_finished") + "        version: "
-                + Utils.convertTimestampToString(page.getTimestamp()));
-    }
-
-    @Override
     public void setStatusText() {
         String fileName = page.getFileName();
         File file = new File(Utils.getOutputDirectory() + "/" + fileName);

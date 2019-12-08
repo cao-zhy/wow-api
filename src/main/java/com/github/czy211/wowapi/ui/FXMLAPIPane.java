@@ -45,17 +45,6 @@ public class FXMLAPIPane extends APIPane {
     }
 
     @Override
-    public void download() {
-        try {
-            page.download();
-            updateStatus(I18n.getText("status_download_finished") + "        build: " + page.getBuild());
-        } catch (IOException e) {
-            updateStatus(I18n.getText("status_connect_fail", e.getMessage()));
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void setStatusText() {
         getStatusType();
         updateStatus(statusText);
