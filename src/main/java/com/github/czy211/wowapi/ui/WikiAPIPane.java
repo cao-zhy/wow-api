@@ -4,23 +4,21 @@ import com.github.czy211.wowapi.constant.Constants;
 import com.github.czy211.wowapi.i18n.I18n;
 import com.github.czy211.wowapi.model.WikiPage;
 import com.github.czy211.wowapi.util.Utils;
-import javafx.scene.control.Label;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class WikiAPIPane extends APIPane {
     private WikiPage page;
 
     public WikiAPIPane(WikiPage page) {
+        super(page);
         this.page = page;
-        getLabel().setText(page.getName());
-        checkStatus();
+        setStatusText();
     }
 
     @Override
@@ -48,34 +46,20 @@ public class WikiAPIPane extends APIPane {
 
     @Override
     public void download() {
-        String fileName = page.getFileName();
-        String outputFile = Utils.getOutputDirectory() + "/" + fileName;
-        try {
-            String content = page.crawl();
-            if (content != null && !"".equals(content)) {
-                // 内容不为空时，才创建文件并写入内容
-                PrintWriter output = new PrintWriter(outputFile);
-                output.println(content);
-                // 更新状态标签文字内容
-                updateStatus(I18n.getText("status_download_finished") + "        version: "
-                        + Utils.convertTimestampToString(page.getTimestamp()));
-                output.close();
-            }
-        } catch (IOException e) {
-            updateStatus(I18n.getText("status_connect_fail", Constants.WIKI_BASE_URL + page.getPath()));
-            e.printStackTrace();
-        }
+        page.download();
+        // 更新状态标签内容
+        updateStatus(I18n.getText("status_download_finished") + "        version: "
+                + Utils.convertTimestampToString(page.getTimestamp()));
     }
 
     @Override
-    public void checkStatus() {
-        Label status = getStatus();
+    public void setStatusText() {
         String fileName = page.getFileName();
         File file = new File(Utils.getOutputDirectory() + "/" + fileName);
         if (!file.exists()) {
-            status.setText(I18n.getText("status_file_not_exist", fileName + " "));
+            updateStatus(I18n.getText("status_file_not_exist", fileName + " "));
         } else {
-            status.setText("version: " + Utils.convertTimestampToString(getTimestampFromFile(file)));
+            updateStatus("version: " + Utils.convertTimestampToString(getTimestampFromFile(file)));
         }
     }
 

@@ -14,12 +14,12 @@ import java.io.IOException;
 
 public class FXMLAPIPane extends APIPane {
     private FXMLPage page;
-    private String[] statusText;
+    private String statusText;
 
     public FXMLAPIPane(FXMLPage page) {
+        super(page);
         this.page = page;
-        getLabel().setText(page.getName());
-        checkStatus();
+        setStatusText();
     }
 
     @Override
@@ -56,9 +56,9 @@ public class FXMLAPIPane extends APIPane {
     }
 
     @Override
-    public void checkStatus() {
-        int statusType = getStatusType();
-        getStatus().setText(statusText[statusType]);
+    public void setStatusText() {
+        getStatusType();
+        updateStatus(statusText);
     }
 
     /**
@@ -69,30 +69,27 @@ public class FXMLAPIPane extends APIPane {
     private int getStatusType() {
         StringBuilder text = new StringBuilder();
         int build = -1;
-        boolean buildIsDiff = false;
         String[] fileNames = page.getFileNames();
         for (String fileName : fileNames) {
             File file = new File(Utils.getOutputDirectory() + "/" + fileName);
             if (!file.exists()) {
                 text.append(fileName).append(" ");
-            } else if (!buildIsDiff) {
+            } else if (text.length() == 0) {
                 int fileBuild = getBuildFromFile(file);
                 if (build != -1 && build != fileBuild) {
-                    buildIsDiff = true;
+                    statusText = I18n.getText("status_version_different");
+                    return 2;
                 }
                 build = fileBuild;
             }
         }
-        statusText = new String[]{I18n.getText("status_file_not_exist", text), "build: " + build,
-                I18n.getText("status_version_different")};
         if (text.length() > 0) {
             // 有文件不存在
+            statusText = I18n.getText("status_file_not_exist", text);
             return 0;
-        } else if (buildIsDiff) {
-            // 版本不一致
-            return 2;
         }
         // 文件都存在且版本一致
+        statusText = "build: " + build;
         return 1;
     }
 

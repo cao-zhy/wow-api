@@ -1,6 +1,7 @@
 package com.github.czy211.wowapi.ui;
 
 import com.github.czy211.wowapi.i18n.I18n;
+import com.github.czy211.wowapi.model.APIPage;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,14 +11,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 public abstract class APIPane extends HBox {
-    private Label label;
     private Label status;
 
-    public APIPane() {
+    public APIPane(APIPage page) {
         setPadding(new Insets(0, 10, 10, 10));
         setSpacing(5);
         setAlignment(Pos.CENTER_LEFT);
-        label = new Label();
+        Label label = new Label(page.getName());
         status = new Label();
         Button check = new Button(I18n.getText("ui_button_check_for_update"));
         Button download = new Button(I18n.getText("ui_button_download"));
@@ -54,9 +54,9 @@ public abstract class APIPane extends HBox {
     }
 
     /**
-     * 检查状态
+     * 设置状态内容
      */
-    public abstract void checkStatus();
+    public abstract void setStatusText();
 
     /**
      * 检查更新
@@ -67,12 +67,4 @@ public abstract class APIPane extends HBox {
      * 下载
      */
     public abstract void download();
-
-    public Label getLabel() {
-        return label;
-    }
-
-    public Label getStatus() {
-        return status;
-    }
 }

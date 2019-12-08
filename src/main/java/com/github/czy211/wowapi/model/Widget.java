@@ -10,8 +10,15 @@ public class Widget {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("    ").append(name).append(" = {\n");
+        for (String handler : handlers) {
+            result.append("        \"").append(handler).append("\",\n");
+        }
+        result.append("    },\n");
+        return result.toString();
     }
 
     public ArrayList<String> getHandlers() {

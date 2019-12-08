@@ -12,16 +12,16 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class FXMLPage {
-    private String name;
+public class FXMLPage extends APIPage {
     private String[] fileNames;
     private int build;
 
-    public FXMLPage() {
-        name = "FrameXML";
+    public FXMLPage(String name) {
+        super(name);
         fileNames = new String[]{"ArtTextureID.lua", "AtlasInfo.lua", "GlobalStrings.txt"};
     }
 
+    @Override
     public void download() throws IOException {
         for (String fileName : fileNames) {
             // 获取远程 build 号
@@ -55,10 +55,6 @@ public class FXMLPage {
                 }
             }
         }
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String[] getFileNames() {

@@ -30,11 +30,11 @@ public class MainFrame extends Application {
         VBox mainPane = new VBox();
         PathPane pathPane = new PathPane();
 
-        WikiPage WoWAPI = new WikiPage("/World_of_Warcraft_API", "WoW API", "WoWAPI.lua", "AttemptToSaveBindings");
-        WikiPage luaAPI = new WikiPage("/Lua_functions", "Lua API", "LuaAPI.lua");
-        WikiPage widgetAPI = new WikiPage("/Widget_API", "Widget API", "WidgetAPI.lua");
-        WikiPage widgetHandler = new WikiPage("/Widget_handlers", "Widget Handler", "WidgetHandler.lua");
-        FXMLPage frameXMLPage = new FXMLPage();
+        WikiPage WoWAPI = new WikiPage("WoW API", "/World_of_Warcraft_API", "WoWAPI.lua", "AttemptToSaveBindings");
+        WikiPage luaAPI = new WikiPage("Lua API", "/Lua_functions", "LuaAPI.lua");
+        WikiPage widgetAPI = new WikiPage("Widget API", "/Widget_API", "WidgetAPI.lua");
+        WikiPage widgetHandler = new WikiPage("Widget Handler", "/Widget_handlers", "WidgetHandler.lua");
+        FXMLPage frameXMLPage = new FXMLPage("FrameXML");
 
         mainPane.getChildren().addAll(pathPane, new WikiAPIPane(WoWAPI), new WikiAPIPane(luaAPI),
                 new WikiAPIPane(widgetAPI), new WikiAPIPane(widgetHandler), new FXMLAPIPane(frameXMLPage));
@@ -45,7 +45,7 @@ public class MainFrame extends Application {
             File file = chooser.showDialog(primaryStage);
             if (file != null) {
                 String outputPath = file.getPath().replaceAll("\\\\", "/");
-                // 更新路径输入框的文字内容
+                // 更新路径输入框的内容
                 pathPane.getPath().setText(outputPath);
                 // 获取配置文件路径
                 File configPath = new File(Utils.getConfigPath());
@@ -62,7 +62,7 @@ public class MainFrame extends Application {
                 // 更换下载位置后需要检查状态
                 for (Node pane : mainPane.getChildren()) {
                     if (pane instanceof APIPane) {
-                        ((APIPane) pane).checkStatus();
+                        ((APIPane) pane).setStatusText();
                     }
                 }
             }
