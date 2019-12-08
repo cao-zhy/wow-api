@@ -33,11 +33,11 @@ public class MainFrame extends Application {
         WikiPage WoWAPI = new WikiPage("WoW API", "/World_of_Warcraft_API", "WoWAPI.lua", "AttemptToSaveBindings");
         WikiPage luaAPI = new WikiPage("Lua API", "/Lua_functions", "LuaAPI.lua");
         WikiPage widgetAPI = new WikiPage("Widget API", "/Widget_API", "WidgetAPI.lua");
-        WikiPage widgetHandler = new WikiPage("Widget Handler", "/Widget_handlers", "WidgetHandler.lua");
+        WikiPage widgetHandlers = new WikiPage("Widget Handlers", "/Widget_handlers", "WidgetHandlers.lua");
         FXMLPage frameXMLPage = new FXMLPage("FrameXML");
 
         mainPane.getChildren().addAll(pathPane, new WikiAPIPane(WoWAPI), new WikiAPIPane(luaAPI),
-                new WikiAPIPane(widgetAPI), new WikiAPIPane(widgetHandler), new FXMLAPIPane(frameXMLPage));
+                new WikiAPIPane(widgetAPI), new WikiAPIPane(widgetHandlers), new FXMLAPIPane(frameXMLPage));
 
         // 选择下载位置
         DirectoryChooser chooser = new DirectoryChooser();

@@ -54,8 +54,8 @@ public class WikiPage extends APIPage {
             // 如果文件名是 WidgetAPI.lua，添加 WidgetTypes
             content.append(Utils.getWidgetTypes()).append("\n\n");
         }
-        if ("WidgetHandler.lua".equals(fileName)) {
-            // WidgetHandler.lua 文件内容
+        if ("WidgetHandlers.lua".equals(fileName)) {
+            // WidgetHandlers.lua 文件内容
             content.append("local widgetHandlers = {\n");
 
             ArrayList<Widget> widgets = new ArrayList<>();
