@@ -5,10 +5,7 @@ import com.github.czy211.wowapi.util.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -24,6 +21,7 @@ public class FXMLPage extends APIPage {
     @Override
     public void download() throws IOException {
         for (String fileName : fileNames) {
+            StringBuilder content = new StringBuilder();
             // 获取远程 build 号
             Document document = Jsoup.connect(Constants.FXML_BASE_URL + "/live").get();
             build = Utils.getBuild(document);
@@ -40,18 +38,22 @@ public class FXMLPage extends APIPage {
                 conn.setRequestProperty("Referer", Constants.FXML_BASE_URL + "/" + build);
                 conn.setRequestProperty("User-Agent", Constants.USER_AGENT);
                 inputStream = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
             } catch (IOException e) {
                 throw new IOException(url.getHost() + url.getFile(), e);
             }
-            // 将读取的文件内容写入文件
-            try (DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(Utils.getOutputDirectory()
-                    + "/" + fileName))) {
-                // 添加 build 号
-                outputStream.writeBytes(Constants.COMMENT_BUILD + build + "\n\n");
-                byte[] buffer = new byte[1000];
-                int readBytes;
-                while ((readBytes = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, readBytes);
+            // 内容不为空时，才创建文件并写入内容
+            if (content.length() > 0) {
+                String outputFile = Utils.getOutputDirectory() + "/" + fileName;
+                try (PrintWriter output = new PrintWriter(outputFile)) {
+                    output.println(Constants.COMMENT_BUILD + build + "\n");
+                    output.println(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
