@@ -19,49 +19,47 @@ public class WikiAPIPane extends APIPane {
 
     public WikiAPIPane(WikiPage page) {
         this.page = page;
-
         getLabel().setText(page.getName());
         checkStatus();
+    }
 
+    @Override
+    public void checkForUpdate() {
         String fileName = page.getFileName();
         String outputFile = Utils.getOutputDirectory() + "/" + fileName;
         File file = new File(outputFile);
-
-        Runnable runCheck = () -> {
-            String url = Constants.WIKI_BASE_URL + page.getPath();
-            updateStatus(I18n.getText("status_checking_for_update"));
-            try {
-                Document document = Jsoup.connect(url).get();
-                long timestamp = Utils.getTimestamp(document);
-                if (!file.exists() || getTimestampFromFile(file) < timestamp) {
-                    updateStatus(I18n.getText("status_update_available"));
-                } else {
-                    updateStatus(I18n.getText("status_latest_version", Utils.convertTimestampToString(timestamp)));
-                }
-            } catch (IOException e) {
-                updateStatus(I18n.getText("status_connect_fail", url));
-                e.printStackTrace();
+        String url = Constants.WIKI_BASE_URL + page.getPath();
+        try {
+            Document document = Jsoup.connect(url).get();
+            long timestamp = Utils.getTimestamp(document);
+            if (!file.exists() || getTimestampFromFile(file) < timestamp) {
+                updateStatus(I18n.getText("status_update_available"));
+            } else {
+                updateStatus(I18n.getText("status_latest_version", Utils.convertTimestampToString(timestamp)));
             }
-        };
-        getCheck().setOnAction(event -> new Thread(runCheck).start());
+        } catch (IOException e) {
+            updateStatus(I18n.getText("status_connect_fail", url));
+            e.printStackTrace();
+        }
+    }
 
-        Runnable runDownload = () -> {
-            updateStatus(I18n.getText("status_downloading"));
-            try {
-                String content = page.crawl();
-                if (content != null && !"".equals(content)) {
-                    PrintWriter output = new PrintWriter(outputFile);
-                    output.println(page.crawl());
-                    updateStatus(I18n.getText("status_wiki_download_finished",
-                            Utils.convertTimestampToString(page.getTimestamp())));
-                    output.close();
-                }
-            } catch (IOException e) {
-                updateStatus(I18n.getText("status_connect_fail", Constants.WIKI_BASE_URL + page.getPath()));
-                e.printStackTrace();
+    @Override
+    public void download() {
+        String fileName = page.getFileName();
+        String outputFile = Utils.getOutputDirectory() + "/" + fileName;
+        try {
+            String content = page.crawl();
+            if (content != null && !"".equals(content)) {
+                PrintWriter output = new PrintWriter(outputFile);
+                output.println(page.crawl());
+                updateStatus(I18n.getText("status_wiki_download_finished",
+                        Utils.convertTimestampToString(page.getTimestamp())));
+                output.close();
             }
-        };
-        getDownload().setOnAction(event -> new Thread(runDownload).start());
+        } catch (IOException e) {
+            updateStatus(I18n.getText("status_connect_fail", Constants.WIKI_BASE_URL + page.getPath()));
+            e.printStackTrace();
+        }
     }
 
     @Override

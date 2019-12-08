@@ -18,42 +18,38 @@ public class FXMLAPIPane extends APIPane {
 
     public FXMLAPIPane(FXMLPage page) {
         this.page = page;
-
         getLabel().setText(page.getName());
-
         checkStatus();
+    }
 
-        Runnable runCheck = () -> {
-            String url = Constants.FXML_BASE_URL + "/live";
-            updateStatus(I18n.getText("status_checking_for_update"));
-            try {
-                Document document = Jsoup.connect(url).get();
-                int build = Utils.getBuild(document);
-                int statusType = getStatusType();
-                if (statusType == 0 || statusType == 2 || getBuildFromFile(new File(
-                        Utils.getOutputDirectory() + "/" + page.getFileNames()[0])) < build) {
-                    updateStatus(I18n.getText("status_update_available"));
-                } else {
-                    updateStatus(I18n.getText("status_latest_build", build));
-                }
-            } catch (IOException e) {
-                updateStatus(I18n.getText("status_connect_fail", url));
-                e.printStackTrace();
+    @Override
+    public void checkForUpdate() {
+        String url = Constants.FXML_BASE_URL + "/live";
+        try {
+            Document document = Jsoup.connect(url).get();
+            int build = Utils.getBuild(document);
+            int statusType = getStatusType();
+            if (statusType == 0 || statusType == 2 || getBuildFromFile(new File(
+                    Utils.getOutputDirectory() + "/" + page.getFileNames()[0])) < build) {
+                updateStatus(I18n.getText("status_update_available"));
+            } else {
+                updateStatus(I18n.getText("status_latest_build", build));
             }
-        };
-        getCheck().setOnAction(event -> new Thread(runCheck).start());
+        } catch (IOException e) {
+            updateStatus(I18n.getText("status_connect_fail", url));
+            e.printStackTrace();
+        }
+    }
 
-        Runnable runDownload = () -> {
-            updateStatus(I18n.getText("status_downloading"));
-            try {
-                page.download();
-                updateStatus(I18n.getText("status_fxml_download_finished", page.getBuild()));
-            } catch (IOException e) {
-                updateStatus(I18n.getText("status_connect_fail", e.getMessage()));
-                e.printStackTrace();
-            }
-        };
-        getDownload().setOnAction(event -> new Thread(runDownload).start());
+    @Override
+    public void download() {
+        try {
+            page.download();
+            updateStatus(I18n.getText("status_fxml_download_finished", page.getBuild()));
+        } catch (IOException e) {
+            updateStatus(I18n.getText("status_connect_fail", e.getMessage()));
+            e.printStackTrace();
+        }
     }
 
     @Override

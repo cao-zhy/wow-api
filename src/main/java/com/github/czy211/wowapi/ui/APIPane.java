@@ -12,8 +12,6 @@ import javafx.scene.layout.Priority;
 public abstract class APIPane extends HBox {
     private Label label;
     private Label status;
-    private Button check;
-    private Button download;
 
     public APIPane() {
         setPadding(new Insets(0, 10, 10, 10));
@@ -21,8 +19,8 @@ public abstract class APIPane extends HBox {
         setAlignment(Pos.CENTER_LEFT);
         label = new Label();
         status = new Label();
-        check = new Button(I18n.getText("ui_button_check_for_update"));
-        download = new Button(I18n.getText("ui_button_download"));
+        Button check = new Button(I18n.getText("ui_button_check_for_update"));
+        Button download = new Button(I18n.getText("ui_button_download"));
         getChildren().addAll(label, status, check, download);
 
         label.setMaxWidth(120);
@@ -30,6 +28,16 @@ public abstract class APIPane extends HBox {
         status.setMaxWidth(Double.MAX_VALUE);
         setHgrow(status, Priority.ALWAYS);
         status.setAlignment(Pos.CENTER);
+
+        check.setOnAction(event -> new Thread(() -> {
+            updateStatus(I18n.getText("status_checking_for_update"));
+            checkForUpdate();
+        }).start());
+
+        download.setOnAction(event -> new Thread(() -> {
+            updateStatus(I18n.getText("status_downloading"));
+            download();
+        }).start());
     }
 
     protected void updateStatus(String text) {
@@ -38,9 +46,9 @@ public abstract class APIPane extends HBox {
 
     public abstract void checkStatus();
 
-    public Button getCheck() {
-        return check;
-    }
+    public abstract void checkForUpdate();
+
+    public abstract void download();
 
     public Label getLabel() {
         return label;
@@ -48,9 +56,5 @@ public abstract class APIPane extends HBox {
 
     public Label getStatus() {
         return status;
-    }
-
-    public Button getDownload() {
-        return download;
     }
 }
