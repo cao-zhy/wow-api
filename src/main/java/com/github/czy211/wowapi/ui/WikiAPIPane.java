@@ -35,7 +35,8 @@ public class WikiAPIPane extends APIPane {
             if (!file.exists() || getTimestampFromFile(file) < timestamp) {
                 updateStatus(I18n.getText("status_update_available"));
             } else {
-                updateStatus(I18n.getText("status_latest_version", Utils.convertTimestampToString(timestamp)));
+                updateStatus(I18n.getText("status_latest_version") + "        version: "
+                        + Utils.convertTimestampToString(timestamp));
             }
         } catch (IOException e) {
             updateStatus(I18n.getText("status_connect_fail", url));
@@ -52,8 +53,8 @@ public class WikiAPIPane extends APIPane {
             if (content != null && !"".equals(content)) {
                 PrintWriter output = new PrintWriter(outputFile);
                 output.println(page.crawl());
-                updateStatus(I18n.getText("status_wiki_download_finished",
-                        Utils.convertTimestampToString(page.getTimestamp())));
+                updateStatus(I18n.getText("status_download_finished") + "        version: "
+                        + Utils.convertTimestampToString(page.getTimestamp()));
                 output.close();
             }
         } catch (IOException e) {

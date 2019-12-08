@@ -33,7 +33,7 @@ public class FXMLAPIPane extends APIPane {
                     Utils.getOutputDirectory() + "/" + page.getFileNames()[0])) < build) {
                 updateStatus(I18n.getText("status_update_available"));
             } else {
-                updateStatus(I18n.getText("status_latest_build", build));
+                updateStatus(I18n.getText("status_latest_version") + "        build: " + build);
             }
         } catch (IOException e) {
             updateStatus(I18n.getText("status_connect_fail", url));
@@ -45,7 +45,7 @@ public class FXMLAPIPane extends APIPane {
     public void download() {
         try {
             page.download();
-            updateStatus(I18n.getText("status_fxml_download_finished", page.getBuild()));
+            updateStatus(I18n.getText("status_download_finished") + "        build: " + page.getBuild());
         } catch (IOException e) {
             updateStatus(I18n.getText("status_connect_fail", e.getMessage()));
             e.printStackTrace();
