@@ -9,6 +9,7 @@ import org.jsoup.nodes.Document;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 
 public class FXMLPage extends APIPage {
     private String[] fileNames;
@@ -39,7 +40,7 @@ public class FXMLPage extends APIPage {
                 conn.setRequestProperty("Referer", Constants.FXML_BASE_URL + "/" + build);
                 conn.setRequestProperty("User-Agent", Constants.USER_AGENT);
                 inputStream = conn.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     content.append(line).append("\n");
@@ -50,11 +51,11 @@ public class FXMLPage extends APIPage {
             // 内容不为空时，才创建文件并写入内容
             if (content.length() > 0) {
                 String outputFile = Utils.getOutputDirectory() + "/" + fileName;
-                try (PrintWriter output = new PrintWriter(outputFile)) {
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile),
+                        StandardCharsets.UTF_8));
+                try (PrintWriter output = new PrintWriter(writer)) {
                     output.println(Constants.COMMENT_BUILD + build + "\n");
                     output.println(content);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }
