@@ -1,7 +1,7 @@
----@class Object
-Object = {}
+---@class UIObject
+UIObject = {}
 
----@class Region:Object
+---@class Region:UIObject
 Region = {}
 
 ---@class LayeredRegion:Region
@@ -13,13 +13,13 @@ ScriptObject = {}
 ---@class Frame:Region
 Frame = {}
 
----@class ControlPoint:Object
+---@class ControlPoint:UIObject
 ControlPoint = {}
 
----@class Animation:Object
+---@class Animation:UIObject
 Animation = {}
 
----@class AnimationGroup:Object
+---@class AnimationGroup:UIObject
 AnimationGroup = {}
 
 ---@class Alpha:Animation

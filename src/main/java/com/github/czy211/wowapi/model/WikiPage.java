@@ -133,12 +133,13 @@ public class WikiPage extends APIPage {
             // 添加有两个父类的 Widget 继承的函数
             if ("WidgetAPI.lua".equals(fileName)) {
                 content.append(Utils.getParentFunctions(content.toString())).append("\n");
+            } else if ("WoWAPI.lua".equals(fileName)) {
+                // 添加 TickerPrototype 类型及其函数
+                content.append("\n---@class TickerPrototype\n");
+                content.append("TickerPrototype = {}\n");
+                content.append("function TickerPrototype:Cancel() end\n");
+                content.append("function TickerPrototype:IsCanceled() end\n");
             }
-            // 添加 TickerPrototype 类型及其函数
-            content.append("\n---@class TickerPrototype\n");
-            content.append("TickerPrototype = {}\n");
-            content.append("function TickerPrototype:Cancel() end\n");
-            content.append("function TickerPrototype:IsCanceled() end\n");
         }
 
         // 内容不为空时，才创建文件并写入内容
