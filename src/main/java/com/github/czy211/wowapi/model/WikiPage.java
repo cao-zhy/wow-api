@@ -59,7 +59,8 @@ public class WikiPage extends APIPage {
             content.append("local widgetHandlers = {\n");
 
             ArrayList<Widget> widgets = new ArrayList<>();
-            Elements elements = document.select("h2:has(span.mw-headline), h3:not(:contains(Inherits)), dd");
+            Elements elements = document.select("h2:has(span.mw-headline), h3:has(span.mw-headline), "
+                    + "h4:has(span.mw-headline), dd:not(:has(ul))");
             for (Element element : elements) {
                 String text = element.text();
                 // 如果文本内容是 References，则已完成遍历
