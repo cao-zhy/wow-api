@@ -15,9 +15,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WikiPage extends APIPage {
-    private String path;
-    private String stopFuncName;
-    private String fileName;
+    private final String path;
+    private final String stopFuncName;
+    private final String fileName;
     private long timestamp;
 
     public WikiPage(String name, String path, String fileName) {
@@ -61,19 +61,25 @@ public class WikiPage extends APIPage {
             ArrayList<Widget> widgets = new ArrayList<>();
             Elements elements = document.select("h2:has(span.mw-headline), h3:has(span.mw-headline), "
                     + "h4:has(span.mw-headline), dd:not(:has(ul))");
+            boolean startFlag = false;
             for (Element element : elements) {
                 String text = element.text();
-                // 如果文本内容是 References，则已完成遍历
-                if ("References".equals(text)) {
-                    break;
+                if (!startFlag) {
+                    startFlag = "ScriptObject".equals(text);
                 }
-                // text 以 “On”、“Pre” 或 “Post” 开头时是 handler 方法
-                if (text.startsWith("On") || text.startsWith("Pre") || text.startsWith("Post")) {
-                    Widget widget = widgets.get(widgets.size() - 1);
-                    widget.getHandlers().add(text);
-                } else { // text 是 widget 名
-                    Widget widget = new Widget(text);
-                    widgets.add(widget);
+                if (startFlag) {
+                    // 如果文本内容是 References，则已完成遍历
+                    if ("References".equals(text)) {
+                        break;
+                    }
+                    // text 以 “On”、“Pre” 或 “Post” 开头时是 handler 方法
+                    if (text.startsWith("On") || text.startsWith("Pre") || text.startsWith("Post")) {
+                        Widget widget = widgets.get(widgets.size() - 1);
+                        widget.getHandlers().add(text);
+                    } else { // text 是 widget 名
+                        Widget widget = new Widget(text);
+                        widgets.add(widget);
+                    }
                 }
             }
 
