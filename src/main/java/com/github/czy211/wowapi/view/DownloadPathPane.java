@@ -1,7 +1,6 @@
 package com.github.czy211.wowapi.view;
 
-import com.github.czy211.wowapi.constant.PathConst;
-import com.github.czy211.wowapi.constant.PropConst;
+import com.github.czy211.wowapi.util.Utils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -10,9 +9,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import java.io.File;
+import java.io.IOException;
 
 public class DownloadPathPane extends HBox {
     private Label lbName;
@@ -35,28 +33,7 @@ public class DownloadPathPane extends HBox {
         setHgrow(tfPath, Priority.ALWAYS);
         tfPath.setFocusTraversable(false);
         tfPath.setEditable(false);
-        File configPath = new File(PathConst.CONFIG_FILE);
-        if (configPath.exists() && configPath.isFile()) {
-            // 配置文件存在，读取下载位置
-            Properties properties = new Properties();
-            try {
-                Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configPath),
-                        StandardCharsets.UTF_8));
-                properties.load(reader);
-                String downloadPath = properties.getProperty(PropConst.DOWNLOAD_PATH);
-                if (downloadPath == null) {
-                    // 没有配置下载位置，使用默认下载位置
-                    tfPath.setText(PathConst.DEFAULT_DOWNLOAD);
-                } else {
-                    tfPath.setText(downloadPath);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            // 配置文件不存在，使用默认下载位置
-            tfPath.setText(PathConst.DEFAULT_DOWNLOAD);
-        }
+        tfPath.setText(Utils.getDownloadPath());
 
         btOpen.setOnAction(event -> {
             File downloadPath = new File(tfPath.getText());

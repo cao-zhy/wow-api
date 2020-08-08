@@ -85,11 +85,25 @@ public class MainWindow extends Application {
         });
 
         Scene scene = new Scene(mainPane);
+        // 调整进度条高度
+        scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 
         primaryStage.setOnShown(event -> {
             // 设置 stage 的最小大小为首选大小
             primaryStage.setMinWidth(primaryStage.getWidth());
             primaryStage.setMinHeight(primaryStage.getHeight());
+        });
+        primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!oldValue && newValue) {
+                // 获得焦点时，更新文件版本信息
+                for (int i = 0; i < mainPane.getChildren().size(); i++) {
+                    Node node = mainPane.getChildren().get(i);
+                    if (node instanceof BaseApiPane) {
+                        BaseApiPane pane = (BaseApiPane) node;
+                        pane.updateLbVersionText();
+                    }
+                }
+            }
         });
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/wow-logo.png")));
