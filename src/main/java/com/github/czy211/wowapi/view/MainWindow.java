@@ -42,7 +42,8 @@ public class MainWindow extends Application {
         }
 
         DownloadPathPane downloadPathPane = new DownloadPathPane();
-        mainPane.getChildren().addAll(downloadPathPane);
+        WidgetHierarchyPane widgetHierarchyPane = new WidgetHierarchyPane("Widget_Hierarchy.png");
+        mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {
             Node node = mainPane.getChildren().get(i);
