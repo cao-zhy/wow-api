@@ -223,10 +223,14 @@ public abstract class BaseApiPane extends BorderPane {
         return "";
     }
 
-    public void downloadFxmlFile(String filename, String language) throws IOException {
+    public void downloadFxmlFile(String filepath) throws IOException {
+        downloadFxmlFile(filepath, null);
+    }
+
+    public void downloadFxmlFile(String filepath, String language) throws IOException {
         long fileBuild = Utils.getBuild()[0];
-        String urlStr = LinkConst.FXML_BASE + "/" + fileBuild + "/" + filename
-                + (language == null ? "" : ("/" + language)) + "/get";
+        String urlStr = LinkConst.FXML_BASE + "/" + fileBuild + filepath + (language == null ? "" : ("/" + language))
+                + "/get";
         try {
             StringBuilder sb = new StringBuilder();
             sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");

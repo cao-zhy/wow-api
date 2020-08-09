@@ -9,7 +9,7 @@ import javafx.scene.layout.HBox;
 import java.io.IOException;
 
 public class GlobalStringsPane extends BaseApiPane {
-    private static final String FILE_NAME = "GlobalStrings.lua";
+    private static final String FILEPATH = "/GlobalStrings.lua";
     private ChoiceBox<String> cbLanguage;
 
     public GlobalStringsPane(String name, EnumVersionType versionType) {
@@ -24,12 +24,12 @@ public class GlobalStringsPane extends BaseApiPane {
 
     @Override
     public void download() throws IOException {
-        downloadFxmlFile(FILE_NAME, cbLanguage.getValue());
+        downloadFxmlFile(FILEPATH, cbLanguage.getValue());
     }
 
     @Override
     public long getRemoteVersion() throws IOException {
-        return Utils.getRemoteBuild(FILE_NAME);
+        return Utils.getRemoteBuild(FILEPATH);
     }
 
     public ChoiceBox<String> getCbLanguage() {

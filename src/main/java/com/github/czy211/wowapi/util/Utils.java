@@ -48,10 +48,11 @@ public class Utils {
         }
     }
 
-    public static long getRemoteBuild(String filename) throws IOException {
+    public static long getRemoteBuild(String filepath) throws IOException {
         String url = LinkConst.FXML_BASE + "/live";
         try {
             Document document = Jsoup.connect(url).get();
+            String filename = filepath.substring(filepath.lastIndexOf("/") + 1);
             Element tr = document.selectFirst("tr:contains(" + filename + ")");
             // 第二个 td 是 build 信息
             Element td = tr.select("td").get(1);
