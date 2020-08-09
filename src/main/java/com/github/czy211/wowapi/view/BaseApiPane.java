@@ -94,7 +94,7 @@ public abstract class BaseApiPane extends BorderPane {
             Platform.runLater(() -> {
                 progressBar.setVisible(true);
                 lbStatus.setTextFill(Color.BLUE);
-                lbStatus.setText("下载中…… 0%");
+                lbStatus.setText("正在连接……");
                 centerNode.getChildren().remove(hlLink);
                 btDownload.setDisable(true);
                 btCheck.setDisable(true);
