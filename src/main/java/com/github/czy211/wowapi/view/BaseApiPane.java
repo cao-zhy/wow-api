@@ -1,6 +1,7 @@
 package com.github.czy211.wowapi.view;
 
 import com.github.czy211.wowapi.constant.EnumVersionType;
+import com.github.czy211.wowapi.constant.LinkConst;
 import com.github.czy211.wowapi.util.Utils;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -17,6 +18,8 @@ import java.awt.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -219,6 +222,45 @@ public abstract class BaseApiPane extends BorderPane {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public void downloadFxmlFile(String filename, String language) throws IOException {
+        long fileBuild = Utils.getBuild()[0];
+        String urlStr = LinkConst.FXML_BASE + "/" + fileBuild + "/" + filename
+                + (language == null ? "" : ("/" + language)) + "/get";
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
+
+            URL url = new URL(urlStr);
+            URLConnection connection = url.openConnection();
+            connection.setRequestProperty("Referer", LinkConst.FXML_BASE + "/" + fileBuild);
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.56 Safari/537.36 Edg/79.0.309.40");
+            int total = connection.getContentLength();
+            int current = 0;
+            InputStream inputStream = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            btDownload.setDisable(false);
+            Platform.runLater(() -> btDownload.setText("取消下载"));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+                sb.append(line).append("\n");
+                current += line.length();
+                updateProgress((double) current / total);
+            }
+            if (sb.length() > 0) {
+                try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + name, "UTF-8")) {
+                    writer.println(sb);
+                }
+            }
+        } catch (IOException e) {
+            throw new IOException(urlStr, e);
+        }
     }
 
     public abstract void download() throws IOException;
