@@ -37,7 +37,7 @@ public abstract class BaseApiPane extends BorderPane {
     private ProgressBar progressBar;
 
     public BaseApiPane(String name, EnumVersionType versionType) {
-        setPadding(new Insets(5, 10, 5, 10));
+        setPadding(new Insets(5, 10, 2, 10));
 
         this.name = name;
         this.versionType = versionType;
