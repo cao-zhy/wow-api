@@ -199,18 +199,20 @@ public abstract class BaseApiPane extends BorderPane {
         String downloadPath = Utils.getDownloadPath();
         File filepath = new File(downloadPath + name);
         if (filepath.exists()) {
+            String version = getLocalVersion(filepath);
             if (versionType == EnumVersionType.TIMESTAMP) {
-                String version = getLocalVersion(filepath);
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/M/d HH:mm");
                 LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(version)),
                         ZoneId.systemDefault());
                 lbVersion.setText("当前版本：" + formatter.format(localDateTime));
+                btCheck.setDisable("".equals(version));
             } else if (versionType == EnumVersionType.BUILD) {
-                lbVersion.setText("当前版本：" + getLocalVersion(filepath));
+                lbVersion.setText("当前版本：" + version);
+                btCheck.setDisable("".equals(version));
             } else {
-                lbVersion.setText(getLocalVersion(filepath));
+                lbVersion.setText(version);
+                btCheck.setDisable(true);
             }
-            btCheck.setDisable(false);
         } else {
             lbVersion.setText("文件不存在！");
             btCheck.setDisable(true);
@@ -222,7 +224,7 @@ public abstract class BaseApiPane extends BorderPane {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath),
                     StandardCharsets.UTF_8));
             String version = reader.readLine();
-            if (versionType != EnumVersionType.NONE) {
+            if (version != null && version.startsWith(EnumVersionType.PREFIX) && versionType != EnumVersionType.NONE) {
                 return version.substring(EnumVersionType.PREFIX.length());
             }
         } catch (IOException e) {
