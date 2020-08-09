@@ -1,5 +1,6 @@
 package com.github.czy211.wowapi.view;
 
+import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.util.Utils;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -13,10 +14,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,23 +29,30 @@ public abstract class BaseApiPane extends BorderPane {
     private String name;
     private Label lbName;
     private Label lbVersion;
+    private EnumVersionType versionType;
     private Label lbStatus;
     private Hyperlink hlLink;
     private Button btDownload;
+    private Button btCheck;
     private ProgressBar progressBar;
 
-    public BaseApiPane(String name) {
+    public BaseApiPane(String name, EnumVersionType versionType) {
         setPadding(new Insets(5, 10, 5, 10));
 
         this.name = name;
+        this.versionType = versionType;
         lbName = new Label(name);
         lbVersion = new Label();
         lbStatus = new Label();
         hlLink = new Hyperlink();
         HBox centerNode = new HBox(lbVersion, lbStatus);
         btDownload = new Button("下载");
+        btCheck = new Button("检查更新");
         progressBar = new ProgressBar(0);
         HBox rightNode = new HBox(5, btDownload);
+        if (versionType != EnumVersionType.NONE) {
+            rightNode.getChildren().add(btCheck);
+        }
 
         setCenter(centerNode);
         setLeft(lbName);
@@ -48,7 +60,7 @@ public abstract class BaseApiPane extends BorderPane {
         setBottom(progressBar);
 
         centerNode.setAlignment(Pos.CENTER);
-        rightNode.setAlignment(Pos.CENTER);
+        rightNode.setAlignment(Pos.CENTER_RIGHT);
         setAlignment(lbName, Pos.CENTER);
         setMargin(centerNode, new Insets(0, 5, 0, 5));
         setMargin(progressBar, new Insets(3, 0, 0, 0));
@@ -81,7 +93,8 @@ public abstract class BaseApiPane extends BorderPane {
                 lbStatus.setTextFill(Color.BLUE);
                 lbStatus.setText("下载中…… 0%");
                 centerNode.getChildren().remove(hlLink);
-                btDownload.setText("取消下载");
+                btDownload.setDisable(true);
+                btCheck.setDisable(true);
                 progressBar.setProgress(0);
             });
 
@@ -93,14 +106,12 @@ public abstract class BaseApiPane extends BorderPane {
                         Platform.runLater(() -> {
                             lbStatus.setTextFill(Color.RED);
                             lbStatus.setText("已取消下载");
-                            centerNode.getChildren().remove(hlLink);
                         });
                     } else {
                         // 下载线程没有被中断，则下载完成
                         Platform.runLater(() -> {
                             lbStatus.setTextFill(Color.GREEN);
                             lbStatus.setText("下载完成");
-                            centerNode.getChildren().remove(hlLink);
                             updateLbVersionText();
                         });
                     }
@@ -110,6 +121,7 @@ public abstract class BaseApiPane extends BorderPane {
                         lbStatus.setText("下载失败！无法连接到");
                         centerNode.getChildren().add(hlLink);
                         hlLink.setText(e.getMessage());
+                        btDownload.setDisable(false);
                     });
                     e.printStackTrace();
                 }
@@ -117,10 +129,59 @@ public abstract class BaseApiPane extends BorderPane {
                 Platform.runLater(() -> {
                     progressBar.setVisible(false);
                     btDownload.setText("下载");
+                    btCheck.setDisable(false);
                 });
             }));
             threadId.set(thread.get().getId());
             thread.get().start();
+        });
+
+        btCheck.setOnAction(event -> new Thread(() -> {
+            Platform.runLater(() -> {
+                lbStatus.setTextFill(Color.BLUE);
+                lbStatus.setText("检查更新中……");
+                centerNode.getChildren().remove(hlLink);
+                btDownload.setDisable(true);
+                btCheck.setDisable(true);
+                progressBar.setVisible(true);
+                progressBar.setProgress(-1);
+            });
+
+            long localVersion = Long.parseLong(getLocalVersion(new File(Utils.getDownloadPath() + name)));
+            try {
+                long remoteVersion = getRemoteVersion();
+                Platform.runLater(() -> {
+                    if (localVersion == remoteVersion) {
+                        lbStatus.setTextFill(Color.GREEN);
+                        lbStatus.setText("已是最新版本");
+                    } else {
+                        lbStatus.setTextFill(Color.RED);
+                        lbStatus.setText("有最新版本可下载");
+                    }
+                });
+            } catch (IOException e) {
+                Platform.runLater(() -> {
+                    lbStatus.setTextFill(Color.RED);
+                    lbStatus.setText("检查更新失败！无法连接到");
+                    centerNode.getChildren().add(hlLink);
+                    hlLink.setText(e.getMessage());
+                });
+                e.printStackTrace();
+            }
+
+            Platform.runLater(() -> {
+                btDownload.setDisable(false);
+                btCheck.setDisable(false);
+                progressBar.setVisible(false);
+            });
+        }).start());
+    }
+
+    public void updateProgress(double progress) {
+        String status = String.format("%s %.1f%%", "下载中……", progress * 100);
+        Platform.runLater(() -> {
+            progressBar.setProgress(progress);
+            lbStatus.setText(status);
         });
     }
 
@@ -128,15 +189,41 @@ public abstract class BaseApiPane extends BorderPane {
         String downloadPath = Utils.getDownloadPath();
         File filepath = new File(downloadPath + name);
         if (filepath.exists()) {
-            lbVersion.setText(getVersion());
+            if (versionType == EnumVersionType.TIMESTAMP) {
+                String version = getLocalVersion(filepath);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/M/d HH:mm");
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(version)),
+                        ZoneId.systemDefault());
+                lbVersion.setText("当前版本：" + formatter.format(localDateTime));
+            } else if (versionType == EnumVersionType.BUILD) {
+                lbVersion.setText("当前版本：" + getLocalVersion(filepath));
+            } else {
+                lbVersion.setText(getLocalVersion(filepath));
+            }
+            btCheck.setDisable(false);
         } else {
             lbVersion.setText("文件不存在！");
+            btCheck.setDisable(true);
         }
     }
 
-    public abstract String getVersion();
+    public String getLocalVersion(File filepath) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath),
+                    StandardCharsets.UTF_8));
+            String version = reader.readLine();
+            if (versionType != EnumVersionType.NONE) {
+                return version.substring(EnumVersionType.PREFIX.length());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     public abstract void download() throws IOException;
+
+    public abstract long getRemoteVersion() throws IOException;
 
     public String getName() {
         return name;
@@ -162,6 +249,14 @@ public abstract class BaseApiPane extends BorderPane {
         this.lbVersion = lbVersion;
     }
 
+    public EnumVersionType getVersionType() {
+        return versionType;
+    }
+
+    public void setVersionType(EnumVersionType versionType) {
+        this.versionType = versionType;
+    }
+
     public Label getLbStatus() {
         return lbStatus;
     }
@@ -184,6 +279,14 @@ public abstract class BaseApiPane extends BorderPane {
 
     public void setBtDownload(Button btDownload) {
         this.btDownload = btDownload;
+    }
+
+    public Button getBtCheck() {
+        return btCheck;
+    }
+
+    public void setBtCheck(Button btCheck) {
+        this.btCheck = btCheck;
     }
 
     public ProgressBar getProgressBar() {

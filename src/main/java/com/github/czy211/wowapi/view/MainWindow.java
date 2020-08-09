@@ -1,5 +1,6 @@
 package com.github.czy211.wowapi.view;
 
+import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.constant.PathConst;
 import com.github.czy211.wowapi.constant.PropConst;
 import javafx.application.Application;
@@ -7,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -42,8 +44,9 @@ public class MainWindow extends Application {
         }
 
         DownloadPathPane downloadPathPane = new DownloadPathPane();
-        WidgetHierarchyPane widgetHierarchyPane = new WidgetHierarchyPane("Widget_Hierarchy.png");
-        mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane);
+        WidgetHierarchyPane widgetHierarchyPane = new WidgetHierarchyPane("Widget_Hierarchy.png", EnumVersionType.NONE);
+        WowApiPane wowApiPane = new WowApiPane("WoW_API.lua", EnumVersionType.TIMESTAMP);
+        mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {
             Node node = mainPane.getChildren().get(i);
@@ -90,9 +93,53 @@ public class MainWindow extends Application {
         scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
 
         primaryStage.setOnShown(event -> {
+            // 通过设置所有 BaseApiPane 的 lbName 的宽度为它们的最大宽度，使 lbName 对齐
+            double maxWidth = 0;
+            for (int i = 0; i < mainPane.getChildren().size(); i++) {
+                Node node = mainPane.getChildren().get(i);
+                if (node instanceof BaseApiPane) {
+                    BaseApiPane pane = (BaseApiPane) node;
+                    double lbNameWidth = pane.getLbName().getWidth();
+                    if (lbNameWidth > maxWidth) {
+                        maxWidth = lbNameWidth;
+                    }
+                }
+            }
+            for (int i = 0; i < mainPane.getChildren().size(); i++) {
+                Node node = mainPane.getChildren().get(i);
+                if (node instanceof BaseApiPane) {
+                    BaseApiPane pane = (BaseApiPane) node;
+                    pane.getLbName().setPrefWidth(maxWidth);
+                }
+            }
+
+            // 通过设置所有 BaseApiPane 的 rightNode 的最小宽度为它们的最大宽度，使 rightNode 对齐
+            maxWidth = 0;
+            for (int i = 0; i < mainPane.getChildren().size(); i++) {
+                Node node = mainPane.getChildren().get(i);
+                if (node instanceof BaseApiPane) {
+                    BaseApiPane pane = (BaseApiPane) node;
+                    HBox rightNode = (HBox) pane.getRight();
+                    double rightNodeWidth = rightNode.getWidth();
+                    if (rightNodeWidth > maxWidth) {
+                        maxWidth = rightNodeWidth;
+                    }
+                }
+            }
+            for (int i = 0; i < mainPane.getChildren().size(); i++) {
+                Node node = mainPane.getChildren().get(i);
+                if (node instanceof BaseApiPane) {
+                    BaseApiPane pane = (BaseApiPane) node;
+                    HBox rightNode = (HBox) pane.getRight();
+                    rightNode.setMinWidth(maxWidth);
+                }
+            }
+
             // 设置 stage 的最小大小为首选大小
             primaryStage.setMinWidth(primaryStage.getWidth());
             primaryStage.setMinHeight(primaryStage.getHeight());
+
+            primaryStage.setWidth(800);
         });
         primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!oldValue && newValue) {
