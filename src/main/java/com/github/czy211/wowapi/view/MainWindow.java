@@ -49,8 +49,10 @@ public class MainWindow extends Application {
         WidgetApiPane widgetApiPane = new WidgetApiPane("Widget_API.lua", EnumVersionType.TIMESTAMP);
         WidgetScriptTypesPane widgetScriptTypesPane = new WidgetScriptTypesPane("Widget_Script_Types.lua",
                 EnumVersionType.TIMESTAMP);
+        WidgetScriptHandlersPane widgetScriptHandlersPane = new WidgetScriptHandlersPane("Widget_Script_Handlers.lua",
+                EnumVersionType.TIMESTAMP);
         mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane, widgetApiPane,
-                widgetScriptTypesPane);
+                widgetScriptTypesPane, widgetScriptHandlersPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {
             Node node = mainPane.getChildren().get(i);
