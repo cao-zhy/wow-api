@@ -4,8 +4,6 @@ import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.constant.LinkConst;
 import com.github.czy211.wowapi.constant.WidgetConst;
 import com.github.czy211.wowapi.util.Utils;
-import javafx.application.Platform;
-import javafx.scene.control.Button;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,14 +21,12 @@ public class WidgetApiPane extends BaseApiPane {
 
     @Override
     public void download() throws IOException {
-        Button btDownload = getBtDownload();
         try {
             StringBuilder sb = new StringBuilder();
             sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
 
             Document document = Jsoup.connect(API_URL).get();
-            btDownload.setDisable(false);
-            Platform.runLater(() -> btDownload.setText("取消下载"));
+            connectSuccess();
 
             Elements widgetElements = document.select("span.mw-headline:not(#Virtual_frames)");
             Elements elements = document.select("dd");

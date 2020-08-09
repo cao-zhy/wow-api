@@ -3,7 +3,6 @@ package com.github.czy211.wowapi.view;
 import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.constant.LinkConst;
 import com.github.czy211.wowapi.util.Utils;
-import javafx.application.Platform;
 import javafx.scene.control.Button;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,8 +28,7 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
                     .append("local widgetScriptHandlers = {\n");
 
             Document document = Jsoup.connect(API_URL).get();
-            btDownload.setDisable(false);
-            Platform.runLater(() -> btDownload.setText("取消下载"));
+            connectSuccess();
 
             Elements elements = document.select("span.mw-headline:not(#Widget_API, #Widget_hierarchy, #Example, "
                     + "#References), dd:not(:has(.disambig-for.noexcerpt, ul))");

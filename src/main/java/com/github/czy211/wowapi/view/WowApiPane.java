@@ -3,8 +3,6 @@ package com.github.czy211.wowapi.view;
 import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.constant.LinkConst;
 import com.github.czy211.wowapi.util.Utils;
-import javafx.application.Platform;
-import javafx.scene.control.Button;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,15 +20,13 @@ public class WowApiPane extends BaseApiPane {
 
     @Override
     public void download() throws IOException {
-        Button btDownload = getBtDownload();
         try {
             StringBuilder sb = new StringBuilder();
             // 添加版本信息
             sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
 
             Document document = Jsoup.connect(API_URL).get();
-            btDownload.setDisable(false);
-            Platform.runLater(() -> btDownload.setText("取消下载"));
+            connectSuccess();
 
             Elements elements = document.select("dd, span#Classic_Specific_Functions");
             int total = elements.size();

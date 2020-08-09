@@ -179,6 +179,14 @@ public abstract class BaseApiPane extends BorderPane {
         }).start());
     }
 
+    public void connectSuccess() {
+        Platform.runLater(() -> {
+            btDownload.setDisable(false);
+            btDownload.setText("取消下载");
+            lbStatus.setText("下载中…… 0%");
+        });
+    }
+
     public void updateProgress(double progress) {
         String status = String.format("%s %.1f%%", "下载中……", progress * 100);
         Platform.runLater(() -> {
@@ -244,8 +252,7 @@ public abstract class BaseApiPane extends BorderPane {
             int current = 0;
             InputStream inputStream = connection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            btDownload.setDisable(false);
-            Platform.runLater(() -> btDownload.setText("取消下载"));
+            connectSuccess();
 
             String line;
             while ((line = reader.readLine()) != null) {
