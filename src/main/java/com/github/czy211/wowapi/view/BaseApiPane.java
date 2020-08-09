@@ -115,7 +115,6 @@ public abstract class BaseApiPane extends BorderPane {
                         Platform.runLater(() -> {
                             lbStatus.setTextFill(Color.GREEN);
                             lbStatus.setText("下载完成");
-                            updateLbVersionText();
                         });
                     }
                 } catch (IOException e) {
@@ -132,7 +131,7 @@ public abstract class BaseApiPane extends BorderPane {
                 Platform.runLater(() -> {
                     progressBar.setVisible(false);
                     btDownload.setText("下载");
-                    btCheck.setDisable(false);
+                    updateLbVersionText();
                 });
             }));
             threadId.set(thread.get().getId());
