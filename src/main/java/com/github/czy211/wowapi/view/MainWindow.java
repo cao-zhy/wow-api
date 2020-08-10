@@ -156,7 +156,7 @@ public class MainWindow extends Application {
             Node node = pane.getChildren().get(i);
             if (node instanceof BaseApiPane) {
                 BaseApiPane apiPane = (BaseApiPane) node;
-                apiPane.updateLbVersionText();
+                apiPane.checkFileExistence();
             }
         }
     }

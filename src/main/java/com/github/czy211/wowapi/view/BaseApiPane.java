@@ -131,7 +131,7 @@ public abstract class BaseApiPane extends BorderPane {
                 Platform.runLater(() -> {
                     progressBar.setVisible(false);
                     btDownload.setText("下载");
-                    updateLbVersionText();
+                    checkFileExistence();
                 });
             }));
             threadId.set(thread.get().getId());
@@ -195,10 +195,24 @@ public abstract class BaseApiPane extends BorderPane {
         });
     }
 
-    public void updateLbVersionText() {
-        String downloadPath = Utils.getDownloadPath();
-        File filepath = new File(downloadPath + name);
-        if (filepath.exists()) {
+    public void checkFileExistence() {
+        File[] files = new File(Utils.getDownloadPath()).listFiles();
+        boolean fileExist = false;
+        File filepath = null;
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    String filename = file.getName();
+                    if (filename.substring(0, filename.lastIndexOf("."))
+                            .equals(name.substring(0, name.lastIndexOf(".")))) {
+                        fileExist = true;
+                        filepath = file;
+                        break;
+                    }
+                }
+            }
+        }
+        if (fileExist) {
             String version = getLocalVersion(filepath);
             if (versionType == EnumVersionType.TIMESTAMP) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/M/d HH:mm");
