@@ -158,7 +158,7 @@ public abstract class BaseApiPane extends BorderPane {
                         lbStatus.setText("已是最新版本");
                     } else {
                         lbStatus.setTextFill(Color.RED);
-                        lbStatus.setText("有最新版本可下载");
+                        lbStatus.setText("有新版本可下载");
                     }
                 });
             } catch (IOException e) {
