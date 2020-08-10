@@ -14,12 +14,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -246,7 +246,7 @@ public abstract class BaseApiPane extends BorderPane {
             sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
 
             URL url = new URL(urlStr);
-            URLConnection connection = url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("Referer", LinkConst.FXML_BASE + "/" + fileBuild);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                     + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.56 Safari/537.36 Edg/79.0.309.40");
