@@ -136,7 +136,7 @@ public class MainWindow extends Application {
             primaryStage.setMinWidth(primaryStage.getWidth());
             primaryStage.setMinHeight(primaryStage.getHeight());
 
-            primaryStage.setWidth(800);
+            primaryStage.setWidth(1000);
         });
         primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!oldValue && newValue) {
@@ -148,6 +148,7 @@ public class MainWindow extends Application {
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/wow-logo.png")));
         primaryStage.setTitle("World of Warcraft API");
         primaryStage.show();
+        primaryStage.centerOnScreen();
     }
 
     public void refreshPane(Pane pane) {
