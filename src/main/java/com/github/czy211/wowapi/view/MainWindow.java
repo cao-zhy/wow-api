@@ -3,20 +3,21 @@ package com.github.czy211.wowapi.view;
 import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.constant.PathConst;
 import com.github.czy211.wowapi.constant.PropConst;
+import com.github.czy211.wowapi.util.Utils;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import java.io.File;
 
 public class MainWindow extends Application {
     @Override
@@ -56,10 +57,11 @@ public class MainWindow extends Application {
         ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_Id.lua", EnumVersionType.BUILD);
         AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.lua", EnumVersionType.BUILD);
         SystemApiPane systemApiPane = new SystemApiPane("System_API.lua", EnumVersionType.BUILD);
+        GlobalVariablesPane globalVariablesPane = new GlobalVariablesPane("Global_Variables.lua", EnumVersionType.NONE);
 
         mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane, widgetApiPane,
                 widgetScriptTypesPane, widgetScriptHandlersPane, luaApiPane, globalStringsPane, artTextureIdPane,
-                atlasInfoPane, systemApiPane);
+                atlasInfoPane, systemApiPane, globalVariablesPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {
             Node node = mainPane.getChildren().get(i);
@@ -70,34 +72,16 @@ public class MainWindow extends Application {
         DirectoryChooser chooser = new DirectoryChooser();
         downloadPathPane.getBtSelect().setOnAction(event -> {
             File filepath = chooser.showDialog(primaryStage);
+            btSelectOnClick(filepath, downloadPathPane.getTfPath(), PropConst.DOWNLOAD_PATH);
             if (filepath != null) {
-                String path = filepath.getPath().replaceAll("\\\\", "/");
-                path = path + (path.endsWith("/") ? "" : "/");
-                downloadPathPane.getTfPath().setText(path);
-                // 将下载位置写入配置文件中
-                File configFilePath = new File(PathConst.CONFIG_FILE);
-                if (configFilePath.exists()) {
-                    Properties properties = new Properties();
-                    try {
-                        // 不加载 properties 就写入的话会清空之前的属性
-                        Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFilePath),
-                                StandardCharsets.UTF_8));
-                        properties.load(reader);
-                        try (PrintWriter writer = new PrintWriter(configFilePath, "UTF-8")) {
-                            properties.setProperty(PropConst.DOWNLOAD_PATH, path);
-                            properties.store(writer, null);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    // 创建配置文件并写入下载位置
-                    try (PrintWriter writer = new PrintWriter(configFilePath, "UTF-8")) {
-                        writer.println(PropConst.DOWNLOAD_PATH + "=" + path);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                refreshPane(mainPane);
+            }
+        });
+        globalVariablesPane.getBtSelect().setOnAction(event -> {
+            File filepath = chooser.showDialog(primaryStage);
+            btSelectOnClick(filepath, globalVariablesPane.getTfBicPath(), PropConst.BIC_PATH);
+            if (filepath != null) {
+                globalVariablesPane.getBtDownload().setDisable(false);
             }
         });
 
@@ -156,19 +140,34 @@ public class MainWindow extends Application {
         });
         primaryStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!oldValue && newValue) {
-                // 获得焦点时，更新文件版本信息
-                for (int i = 0; i < mainPane.getChildren().size(); i++) {
-                    Node node = mainPane.getChildren().get(i);
-                    if (node instanceof BaseApiPane) {
-                        BaseApiPane pane = (BaseApiPane) node;
-                        pane.updateLbVersionText();
-                    }
-                }
+                // 获得焦点时，刷新所有面板
+                refreshPane(mainPane);
             }
         });
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/wow-logo.png")));
         primaryStage.setTitle("World of Warcraft API");
         primaryStage.show();
+    }
+
+    public void refreshPane(Pane pane) {
+        for (int i = 0; i < pane.getChildren().size(); i++) {
+            Node node = pane.getChildren().get(i);
+            if (node instanceof BaseApiPane) {
+                BaseApiPane apiPane = (BaseApiPane) node;
+                apiPane.updateLbVersionText();
+            }
+        }
+    }
+
+    public void btSelectOnClick(File filepath, TextField textField, String property) {
+        if (filepath != null) {
+            String path = filepath.getPath().replaceAll("\\\\", "/");
+            path = path + (path.endsWith("/") ? "" : "/");
+            // 设置 textField 的值
+            textField.setText(path);
+            // 将属性写入配置文件
+            Utils.setConfigProperty(property, path);
+        }
     }
 }

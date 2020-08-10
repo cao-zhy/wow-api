@@ -78,7 +78,7 @@ public class WidgetApiPane extends BaseApiPane {
                         String[] names = name.split(":");
                         String widgetName = names[0];
                         String functionName = names[1];
-                        String[] widgets = WidgetConst.COPY_FUNCTION.get(widgetName);
+                        String[] widgets = WidgetConst.COPY_FUNCTIONS.get(widgetName);
                         if (widgets != null) {
                             for (String widget : widgets) {
                                 sb.append("---@see ").append(widgetName).append("#").append(functionName)

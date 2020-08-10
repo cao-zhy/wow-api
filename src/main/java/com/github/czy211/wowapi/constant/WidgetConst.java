@@ -1,10 +1,15 @@
 package com.github.czy211.wowapi.constant;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class WidgetConst {
     public static final HashMap<String, String> WIDGET_PARENT = new HashMap<>();
-    public static final HashMap<String, String[]> COPY_FUNCTION = new HashMap<>();
+    public static final HashMap<String, String[]> COPY_FUNCTIONS = new HashMap<>();
+    public static final HashMap<String, String> INTRINSIC_MIXIN = new HashMap<>();
+    public static final HashSet<String> EXCLUDE_TAGS = new HashSet<>(Arrays.asList("Screen", "LCDBitmap", "Binding",
+            "LCDText", "Attribute", "ModelFFX", "LCDSubscreen", "ColorWheelTexture"));
 
     static {
         WIDGET_PARENT.put("Region", "UIObject");
@@ -57,11 +62,16 @@ public class WidgetConst {
         WIDGET_PARENT.put("QuestPOIFrame", "POIFrame");
         WIDGET_PARENT.put("ScenarioPOIFrame", "POIFrame");
 
-        COPY_FUNCTION.put("ScriptObject", new String[]{"Frame", "Animation", "AnimationGroups"});
-        COPY_FUNCTION.put("FontInstance", new String[]{"FontString", "EditBox", "MessageFrame", "ScrollingMessageFrame",
+        COPY_FUNCTIONS.put("ScriptObject", new String[]{"Frame", "Animation", "AnimationGroups"});
+        COPY_FUNCTIONS.put("FontInstance", new String[]{"FontString", "EditBox", "MessageFrame", "ScrollingMessageFrame",
                 "SimpleHTML"});
-        COPY_FUNCTION.put("Scale", new String[]{"LineScale"});
-        COPY_FUNCTION.put("Translation", new String[]{"LineTranslation"});
-        COPY_FUNCTION.put("Texture", new String[]{"MaskTexture", "Line"});
+        COPY_FUNCTIONS.put("Scale", new String[]{"LineScale"});
+        COPY_FUNCTIONS.put("Translation", new String[]{"LineTranslation"});
+        COPY_FUNCTIONS.put("Texture", new String[]{"MaskTexture", "Line"});
+
+        INTRINSIC_MIXIN.put("DropDownToggleButton", "DropDownToggleButtonMixin");
+        INTRINSIC_MIXIN.put("ContainedAlertFrame", "ContainedAlertFrameMixin");
+        INTRINSIC_MIXIN.put("ItemButton", "ItemButtonMixin");
+        INTRINSIC_MIXIN.put("ScrollingMessageFrame", "ScrollingMessageFrameMixin");
     }
 }
