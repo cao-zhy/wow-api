@@ -3,7 +3,6 @@ package com.github.czy211.wowapi.view;
 import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.constant.LinkConst;
 import com.github.czy211.wowapi.util.Utils;
-import javafx.scene.control.Button;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,12 +20,8 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
 
     @Override
     public void download() throws IOException {
-        Button btDownload = getBtDownload();
         try {
             StringBuilder sb = new StringBuilder();
-            sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n")
-                    .append("local widgetScriptHandlers = {\n");
-
             Document document = Jsoup.connect(API_URL).get();
             connectSuccess();
 
@@ -61,9 +56,11 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
                 }
             }
             if (sb.length() > 0) {
-                sb.append("    },\n}");
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
+                    writer.println(EnumVersionType.PREFIX + getRemoteVersion());
+                    writer.println("\nlocal widgetScriptHandlers = {\n");
                     writer.println(sb);
+                    writer.println("    },\n}");
                 }
             }
         } catch (IOException e) {

@@ -22,9 +22,6 @@ public class WowApiPane extends BaseApiPane {
     public void download() throws IOException {
         try {
             StringBuilder sb = new StringBuilder();
-            // 添加版本信息
-            sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
-
             Document document = Jsoup.connect(API_URL).get();
             connectSuccess();
 
@@ -67,6 +64,8 @@ public class WowApiPane extends BaseApiPane {
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
+                    writer.println(EnumVersionType.PREFIX + getRemoteVersion());
+                    writer.println();
                     writer.println(sb);
                 }
             }

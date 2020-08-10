@@ -243,8 +243,6 @@ public abstract class BaseApiPane extends BorderPane {
                 + "/get";
         try {
             StringBuilder sb = new StringBuilder();
-            sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
-
             URL url = new URL(urlStr);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("Referer", LinkConst.FXML_BASE + "/" + fileBuild);
@@ -267,6 +265,8 @@ public abstract class BaseApiPane extends BorderPane {
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + name, "UTF-8")) {
+                    writer.println(EnumVersionType.PREFIX + getRemoteVersion());
+                    writer.println();
                     writer.println(sb);
                 }
             }
