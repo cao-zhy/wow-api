@@ -52,14 +52,16 @@ API 面板左边显示 API 文件名，中间显示文件信息和操作状态�
 7. 添加 SDK。创建项目，在 Project Structure 中添加 SDK，classpath 选择 %WoW_HOME%\\_retail\_\BlizzardInterfaceCode。  
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/SDK.png)
 
-widget 和 mixin 等 table 的函数需要使用注解声明变量的类型，才会有代码补全提示。例如：
+widget 和 mixin 等声明在 table 里的函数需要使用注解声明变量的类型，才会有代码补全提示。例如：
 ```
 ---@type Frame
 local f = CreateFrame("Frame")
 ```
-这样使用 “f” 的时候，才会有 Frame 的函数代码补全提示。关于注解的使用请参考 <https://emmylua.github.io/annotation.html>
+使用 “---@type” 声明 f 的类型为 Frame，输入 f 后会有 Frame 的函数提示。关于注解的使用请参考 <https://emmylua.github.io/annotation.html>
 
 ## 改动日志
+### v3.1.0
+- 优化解析暴雪接口代码，支持显示更多暴雪定义的 Widget 补全提示。
 ### v3.0.0
 - 添加 widget hierarchy 图片下载功能。
 - 添加 widget script type 的代码补全提示。

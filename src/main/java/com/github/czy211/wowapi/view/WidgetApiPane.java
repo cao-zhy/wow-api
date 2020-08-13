@@ -2,7 +2,6 @@ package com.github.czy211.wowapi.view;
 
 import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.constant.LinkConst;
-import com.github.czy211.wowapi.constant.WidgetConst;
 import com.github.czy211.wowapi.util.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,9 +10,71 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 public class WidgetApiPane extends BaseApiPane {
     private static final String API_URL = LinkConst.WIKI_BASE + "/Widget_API";
+    private static final HashMap<String, String[]> COPY_FUNCTIONS = new HashMap<>();
+    private static final HashMap<String, String> WIDGET_PARENT = new HashMap<>();
+
+    static {
+        WIDGET_PARENT.put("Region", "UIObject");
+        WIDGET_PARENT.put("LayeredRegion", "Region");
+        WIDGET_PARENT.put("Texture", "LayeredRegion");
+        WIDGET_PARENT.put("MaskTexture", "LayeredRegion");
+        WIDGET_PARENT.put("Line", "LayeredRegion");
+        WIDGET_PARENT.put("ControlPoint", "UIObject");
+        WIDGET_PARENT.put("Animation", "UIObject");
+        WIDGET_PARENT.put("AnimationGroup", "UIObject");
+        WIDGET_PARENT.put("Alpha", "Animation");
+        WIDGET_PARENT.put("Scale", "Animation");
+        WIDGET_PARENT.put("Translation", "Animation");
+        WIDGET_PARENT.put("Rotation", "Animation");
+        WIDGET_PARENT.put("Path", "Animation");
+        WIDGET_PARENT.put("LineScale", "Animation");
+        WIDGET_PARENT.put("LineTranslation", "Animation");
+        WIDGET_PARENT.put("TextureCoordTranslation", "Animation");
+        WIDGET_PARENT.put("Frame", "Region");
+        WIDGET_PARENT.put("FontString", "LayeredRegion");
+        WIDGET_PARENT.put("Font", "FontInstance");
+        WIDGET_PARENT.put("EditBox", "Frame");
+        WIDGET_PARENT.put("MessageFrame", "Frame");
+        WIDGET_PARENT.put("SimpleHTML", "Frame");
+        WIDGET_PARENT.put("Browser", "Frame");
+        WIDGET_PARENT.put("Minimap", "Frame");
+        WIDGET_PARENT.put("FogOfWarFrame", "Frame");
+        WIDGET_PARENT.put("Checkout", "Frame");
+        WIDGET_PARENT.put("ModelScene", "Frame");
+        WIDGET_PARENT.put("MovieFrame", "Frame");
+        WIDGET_PARENT.put("ColorSelect", "Frame");
+        WIDGET_PARENT.put("StatusBar", "Frame");
+        WIDGET_PARENT.put("OffScreenFrame", "Frame");
+        WIDGET_PARENT.put("Cooldown", "Frame");
+        WIDGET_PARENT.put("ScrollFrame", "Frame");
+        WIDGET_PARENT.put("UnitPositionFrame", "Frame");
+        WIDGET_PARENT.put("GameTooltip", "Frame");
+        WIDGET_PARENT.put("Slider", "Frame");
+        WIDGET_PARENT.put("WorldFrame", "Frame");
+        WIDGET_PARENT.put("ModelSceneActor", "Frame");
+        WIDGET_PARENT.put("Model", "Frame");
+        WIDGET_PARENT.put("Button", "Frame");
+        WIDGET_PARENT.put("POIFrame", "Frame");
+        WIDGET_PARENT.put("PlayerModel", "Model");
+        WIDGET_PARENT.put("CinematicModel", "PlayerModel");
+        WIDGET_PARENT.put("DressUpModel", "PlayerModel");
+        WIDGET_PARENT.put("TabardModel", "PlayerModel");
+        WIDGET_PARENT.put("CheckButton", "Button");
+        WIDGET_PARENT.put("ArchaeologyDigSiteFrame", "POIFrame");
+        WIDGET_PARENT.put("QuestPOIFrame", "POIFrame");
+        WIDGET_PARENT.put("ScenarioPOIFrame", "POIFrame");
+
+        COPY_FUNCTIONS.put("ScriptObject", new String[]{"Frame", "Animation", "AnimationGroups"});
+        COPY_FUNCTIONS.put("FontInstance", new String[]{"FontString", "EditBox", "MessageFrame", "ScrollingMessageFrame",
+                "SimpleHTML"});
+        COPY_FUNCTIONS.put("Scale", new String[]{"LineScale"});
+        COPY_FUNCTIONS.put("Translation", new String[]{"LineTranslation"});
+        COPY_FUNCTIONS.put("Texture", new String[]{"MaskTexture", "Line"});
+    }
 
     public WidgetApiPane(String name, EnumVersionType versionType) {
         super(name, versionType);
@@ -40,7 +101,7 @@ public class WidgetApiPane extends BaseApiPane {
                     continue;
                 }
                 sb.append("---@class ").append(name);
-                String parentName = WidgetConst.WIDGET_PARENT.get(name);
+                String parentName = WIDGET_PARENT.get(name);
                 if (parentName != null) {
                     sb.append(":").append(parentName);
                 }
@@ -76,7 +137,7 @@ public class WidgetApiPane extends BaseApiPane {
                         String[] names = name.split(":");
                         String widgetName = names[0];
                         String functionName = names[1];
-                        String[] widgets = WidgetConst.COPY_FUNCTIONS.get(widgetName);
+                        String[] widgets = COPY_FUNCTIONS.get(widgetName);
                         if (widgets != null) {
                             for (String widget : widgets) {
                                 sb.append("---@see ").append(widgetName).append("#").append(functionName)
