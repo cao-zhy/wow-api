@@ -60,6 +60,8 @@ local f = CreateFrame("Frame")
 使用 “---@type” 声明 f 的类型为 Frame，输入 f 后会有 Frame 的函数提示。关于注解的使用请参考 <https://emmylua.github.io/annotation.html>
 
 ## 改动日志
+### v3.1.1
+- 修复 Global_Variables.lua 中有错误的 widget 类型的问题。
 ### v3.1.0
 - 优化解析暴雪接口代码，支持显示更多暴雪定义的 Widget 补全提示。
 ### v3.0.0

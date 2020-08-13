@@ -128,6 +128,7 @@ public class GlobalVariablesPane extends BaseApiPane {
                                 }
 
                                 String tagName = element.tagName();
+                                tagName = replaceTagName(tagName);
                                 String inherits = element.attr("inherits");
                                 String mixins = element.attr("mixin");
                                 if ("".equals(mixins)) {
