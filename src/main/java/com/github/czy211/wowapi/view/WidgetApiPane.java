@@ -125,28 +125,17 @@ public class WidgetApiPane extends BaseApiPane {
                         if (!title.endsWith("(page does not exist)")) {
                             url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
                         }
+                        String front = "--- " + description + url + "\nfunction ";
+                        String back = "(" + (text.indexOf(")") - text.indexOf("(") > 1 ? "..." : "") + ") end\n\n";
                         String name = link.text();
-                        sb.append("--- ").append(description).append(url).append("\nfunction ").append(name)
-                                .append("(");
-                        if (text.indexOf(")") - text.indexOf("(") > 1) {
-                            sb.append("...");
-                        }
-                        sb.append(") end\n\n");
+                        sb.append(front).append(name).append(back);
 
                         // 复制 widget 另一个父类的函数
-                        String[] names = name.split(":");
-                        String widgetName = names[0];
-                        String functionName = names[1];
+                        String widgetName = name.split(":")[0];
                         String[] widgets = COPY_FUNCTIONS.get(widgetName);
                         if (widgets != null) {
                             for (String widget : widgets) {
-                                sb.append("---@see ").append(widgetName).append("#").append(functionName)
-                                        .append("\nfunction ").append(widget).append(":").append(functionName)
-                                        .append("(");
-                                if (text.indexOf(")") - text.indexOf("(") > 1) {
-                                    sb.append("...");
-                                }
-                                sb.append(") end\n\n");
+                                sb.append("function ").append(name.replaceFirst(widgetName, widget)).append(back);
                             }
                         }
                     }
