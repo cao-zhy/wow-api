@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
 
 public class WowApiPane extends BaseApiPane {
     private static final String API_URL = LinkConst.WIKI_BASE + "/World_of_Warcraft_API";
@@ -22,6 +23,7 @@ public class WowApiPane extends BaseApiPane {
     public void download() throws IOException {
         try {
             StringBuilder sb = new StringBuilder();
+            HashSet<String> namespaces = new HashSet<>();
             Document document = Jsoup.connect(API_URL).get();
             connectSuccess();
 
@@ -53,6 +55,10 @@ public class WowApiPane extends BaseApiPane {
                             url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
                         }
                         String name = link.text();
+                        if (name.startsWith("C_")) {
+                            String namespace = name.substring(0, name.indexOf("."));
+                            namespaces.add(namespace);
+                        }
                         sb.append("--- ").append(description).append(url).append("\nfunction ").append(name)
                                 .append("(");
                         if (text.indexOf(")") - text.indexOf("(") > 1) {
@@ -65,6 +71,10 @@ public class WowApiPane extends BaseApiPane {
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
                     writer.println(EnumVersionType.PREFIX + getRemoteVersion());
+                    writer.println();
+                    for (String namespace : namespaces) {
+                        writer.println(namespace + " = {}");
+                    }
                     writer.println();
                     writer.println(sb);
                 }
