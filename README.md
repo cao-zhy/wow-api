@@ -34,7 +34,7 @@ API 面板左边显示 API 文件名，中间显示文件信息和操作状态�
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/Global%20Strings.png)
 - Art_Texture_Id.lua 从 <https://www.townlong-yak.com/framexml/live> 下载 ArtTextureID.lua 文件，包含所有材质 id，仅供查询使用，不影响代码补全提示。
 - Atlas_Info.lua 从 <https://www.townlong-yak.com/framexml/live> 下载 AtlasInfo.lua 文件，包含所有图集信息，仅供查询使用，不影响代码补全提示。
-- System_API.lua 文件包含了暴雪 API 文档插件中所有的命名空间、事件和枚举值，和部分暴雪接口代码中没有的全局数字常量。代码补全提示会包含这些值。因为是使用 [WlkUI](https://github.com/czy211/wlk-ui) 插件在游戏内导出，所以不提供下载。  
+- System_API.lua 文件包含了暴雪 API 文档插件中的事件、枚举值，和部分暴雪接口代码中没有的全局数字常量。代码补全提示会包含这些值。因为是使用 [WlkUI](https://github.com/czy211/wlk-ui) 插件在游戏内导出，所以不提供下载。  
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/System%20API.png)
 - Global_Variabls.lua 从暴雪接口代码导出 xml 文件中定义的一级 widget 全局变量和 lua 文件中的 mixin 和其它全局函数，代码补全提示会包含这些值。需要提供暴雪接口代码位置，暴雪接口代码导出的默认位置是 %WoW_HOME%\\_retail\_\BlizzardInterfaceCode\Interface。因为没有版本信息，所以不提供检查更新。 
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/Global%20Variables.png)
@@ -60,6 +60,8 @@ local f = CreateFrame("Frame")
 使用 “---@type” 声明 f 的类型为 Frame，输入 f 后会有 Frame 的函数提示。关于注解的使用请参考 <https://emmylua.github.io/annotation.html>
 
 ## 改动日志
+### v3.1.2
+- WoW_API.lua 添加命名空间。
 ### v3.1.1
 - 修复 Global_Variables.lua 中有错误的 widget 类型的问题。
 ### v3.1.0
