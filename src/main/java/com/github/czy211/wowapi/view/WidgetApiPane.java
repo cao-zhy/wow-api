@@ -68,9 +68,8 @@ public class WidgetApiPane extends BaseApiPane {
         WIDGET_PARENT.put("QuestPOIFrame", "POIFrame");
         WIDGET_PARENT.put("ScenarioPOIFrame", "POIFrame");
 
-        COPY_FUNCTIONS.put("ScriptObject", new String[]{"Frame", "Animation", "AnimationGroups"});
-        COPY_FUNCTIONS.put("FontInstance", new String[]{"FontString", "EditBox", "MessageFrame", "ScrollingMessageFrame",
-                "SimpleHTML"});
+        COPY_FUNCTIONS.put("FontInstance", new String[]{"FontString", "EditBox", "MessageFrame", "SimpleHTML",
+                "ScrollingMessageFrame"});
         COPY_FUNCTIONS.put("Scale", new String[]{"LineScale"});
         COPY_FUNCTIONS.put("Translation", new String[]{"LineTranslation"});
         COPY_FUNCTIONS.put("Texture", new String[]{"MaskTexture", "Line"});
