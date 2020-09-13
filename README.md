@@ -1,5 +1,4 @@
 # WoW API
-## 项目背景
 使用 IntelliJ IDEA 编写魔兽世界插件时，暴雪定义的全局变量和函数没有代码补全提示。
 
 ## 功能介绍
@@ -60,6 +59,8 @@ local f = CreateFrame("Frame")
 使用 “---@type” 声明 f 的类型为 Frame，输入 f 后会有 Frame 的函数提示。关于注解的使用请参考 <https://emmylua.github.io/annotation.html>
 
 ## 改动日志
+### v3.1.3
+- 修正了部分以 $parent 开头的全局变量不正确的问题。
 ### v3.1.2
 - WoW_API.lua 添加命名空间。
 ### v3.1.1
