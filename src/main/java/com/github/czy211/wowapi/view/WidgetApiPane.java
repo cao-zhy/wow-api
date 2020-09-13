@@ -86,8 +86,10 @@ public class WidgetApiPane extends BaseApiPane {
             Document document = Jsoup.connect(API_URL).get();
             connectSuccess();
 
-            Elements widgetElements = document.select("span.mw-headline:not(#Virtual_frames)");
-            Elements elements = document.select("dd");
+            Elements widgetElements = document.select("span.mw-headline:not(#Virtual_frames,#ItemButton,"
+                    + "#ScrollingMessageFrame)");
+            Elements elements = document.select("dd:not(:matches(^(UI|DEPRECATED|REMOVED) ))"
+                    + ":has(a[title^=API ]:eq(0))");
             int total = widgetElements.size() + elements.size();
             int current = 0;
 
@@ -96,9 +98,6 @@ public class WidgetApiPane extends BaseApiPane {
                 updateProgress((double) current / total);
 
                 String name = element.text();
-                if ("ItemButton".equals(name) || "ScrollingMessageFrame".equals(name)) {
-                    continue;
-                }
                 sb.append("---@class ").append(name);
                 String parentName = WIDGET_PARENT.get(name);
                 if (parentName != null) {
@@ -112,31 +111,24 @@ public class WidgetApiPane extends BaseApiPane {
                 updateProgress((double) current / total);
 
                 String text = element.text();
-                if (text.startsWith("UI ") || text.startsWith("DEPRECATED ") || text.startsWith("REMOVED ")) {
-                    continue;
-                }
                 Element link = element.selectFirst("a");
-                if (link != null) {
-                    String title = link.attr("title");
-                    if (title != null && title.startsWith("API ")) {
-                        String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
-                        String url = "";
-                        if (!title.endsWith("(page does not exist)")) {
-                            url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
-                        }
-                        String front = "--- " + description + url + "\nfunction ";
-                        String back = "(" + (text.indexOf(")") - text.indexOf("(") > 1 ? "..." : "") + ") end\n\n";
-                        String name = link.text();
-                        sb.append(front).append(name).append(back);
+                String title = link.attr("title");
+                String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
+                String url = "";
+                if (!title.endsWith("(page does not exist)")) {
+                    url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
+                }
+                String front = "--- " + description + url + "\nfunction ";
+                String back = "(" + (text.indexOf(")") - text.indexOf("(") > 1 ? "..." : "") + ") end\n\n";
+                String name = link.text();
+                sb.append(front).append(name).append(back);
 
-                        // 复制 widget 另一个父类的函数
-                        String widgetName = name.split(":")[0];
-                        String[] widgets = COPY_FUNCTIONS.get(widgetName);
-                        if (widgets != null) {
-                            for (String widget : widgets) {
-                                sb.append("function ").append(name.replaceFirst(widgetName, widget)).append(back);
-                            }
-                        }
+                // 复制函数
+                String widgetName = name.split(":")[0];
+                String[] widgets = COPY_FUNCTIONS.get(widgetName);
+                if (widgets != null) {
+                    for (String widget : widgets) {
+                        sb.append("function ").append(name.replaceFirst(widgetName, widget)).append(back);
                     }
                 }
             }

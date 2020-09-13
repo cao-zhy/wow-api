@@ -27,7 +27,8 @@ public class WowApiPane extends BaseApiPane {
             Document document = Jsoup.connect(API_URL).get();
             connectSuccess();
 
-            Elements elements = document.select("dd, span#Classic_Specific_Functions");
+            Elements elements = document.select("dd:not(:matches(^(UI|DEPRECATED|REMOVED) )):has(a[title^=API ]:eq(0)),"
+                    + "span#Classic_Specific_Functions");
             int total = elements.size();
             int current = 0;
             for (Element element : elements) {
@@ -37,36 +38,29 @@ public class WowApiPane extends BaseApiPane {
                 current++;
                 updateProgress((double) current / total);
 
-                String text = element.text();
-                if (text.startsWith("UI ") || text.startsWith("DEPRECATED ") || text.startsWith("REMOVED ")) {
-                    // 跳过的函数
-                    continue;
-                } else if ("span".equals(element.tagName())) {
+                if ("span".equals(element.tagName())) {
                     // 遍历完成
                     break;
                 }
                 Element link = element.selectFirst("a");
-                if (link != null) {
-                    String title = link.attr("title");
-                    if (title != null && title.startsWith("API ")) {
-                        String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
-                        String url = "";
-                        if (!title.endsWith("(page does not exist)")) {
-                            url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
-                        }
-                        String name = link.text();
-                        if (name.startsWith("C_")) {
-                            String namespace = name.substring(0, name.indexOf("."));
-                            namespaces.add(namespace);
-                        }
-                        sb.append("--- ").append(description).append(url).append("\nfunction ").append(name)
-                                .append("(");
-                        if (text.indexOf(")") - text.indexOf("(") > 1) {
-                            sb.append("...");
-                        }
-                        sb.append(") end\n\n");
-                    }
+                String title = link.attr("title");
+                String text = element.text();
+                String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
+                String url = "";
+                if (!title.endsWith("(page does not exist)")) {
+                    url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
                 }
+                String name = link.text();
+                if (name.startsWith("C_")) {
+                    String namespace = name.substring(0, name.indexOf("."));
+                    namespaces.add(namespace);
+                }
+                sb.append("--- ").append(description).append(url).append("\nfunction ").append(name)
+                        .append("(");
+                if (text.indexOf(")") - text.indexOf("(") > 1) {
+                    sb.append("...");
+                }
+                sb.append(") end\n\n");
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {

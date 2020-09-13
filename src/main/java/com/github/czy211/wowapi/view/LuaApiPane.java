@@ -25,7 +25,7 @@ public class LuaApiPane extends BaseApiPane {
             Document document = Jsoup.connect(API_URL).get();
             connectSuccess();
 
-            Elements elements = document.select("dd");
+            Elements elements = document.select("dd:has(a[title^=API ]:eq(0)):not(:matches(deprecated))");
             int total = elements.size();
             int current = 0;
             for (Element element : elements) {
@@ -33,27 +33,19 @@ public class LuaApiPane extends BaseApiPane {
                 updateProgress((double) current / total);
 
                 String text = element.text();
-                if (text.startsWith("UI ") || text.startsWith("DEPRECATED ") || text.startsWith("REMOVED ")) {
-                    continue;
-                }
+                String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
                 Element link = element.selectFirst("a");
-                if (link != null) {
-                    String title = link.attr("title");
-                    if (title != null && title.startsWith("API ")) {
-                        String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
-                        String url = "";
-                        if (!title.endsWith("(page does not exist)")) {
-                            url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
-                        }
-                        String name = link.text();
-                        sb.append("--- ").append(description).append(url).append("\nfunction ").append(name)
-                                .append("(");
-                        if (text.indexOf(")") - text.indexOf("(") > 1) {
-                            sb.append("...");
-                        }
-                        sb.append(") end\n\n");
-                    }
+                String title = link.attr("title");
+                String url = "";
+                if (!title.endsWith("(page does not exist)")) {
+                    url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
                 }
+                String name = link.text();
+                sb.append("--- ").append(description).append(url).append("\nfunction ").append(name).append("(");
+                if (text.indexOf(")") - text.indexOf("(") > 1) {
+                    sb.append("...");
+                }
+                sb.append(") end\n\n");
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {

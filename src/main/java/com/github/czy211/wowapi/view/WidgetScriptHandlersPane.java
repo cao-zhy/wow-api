@@ -25,35 +25,25 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
             Document document = Jsoup.connect(API_URL).get();
             connectSuccess();
 
-            Elements elements = document.select("span.mw-headline:not(#Widget_API, #Widget_hierarchy, #Example, "
-                    + "#References), dd:not(:has(.disambig-for.noexcerpt, ul))");
+            Elements elements = document.select("span.mw-headline:not(#Widget_API,#Widget_hierarchy,#Example,"
+                    + "#References),dd:has(a[title^=UIHANDLER ]:eq(0))");
             int total = elements.size();
             int current = 0;
-            boolean closingBrace = false;
+            boolean first = true;
             for (Element element : elements) {
                 current++;
                 updateProgress((double) current / total);
 
                 String text = element.text();
-                if (text.startsWith("UI ") || text.startsWith("DEPRECATED ") || text.startsWith("REMOVED ")) {
-                    continue;
-                }
                 if ("span".equals(element.tagName())) {
-                    if (closingBrace) {
+                    if (!first) {
                         sb.append("    },\n");
                     }
                     sb.append("    ").append(text).append(" = {\n");
-                    closingBrace = true;
                 } else {
-                    Element link = element.selectFirst("a");
-                    if (link != null) {
-                        String title = link.attr("title");
-                        if (title != null && title.startsWith("UIHANDLER ")) {
-                            sb.append("        \"").append(text).append("\",\n");
-                            closingBrace = true;
-                        }
-                    }
+                    sb.append("        \"").append(text).append("\",\n");
                 }
+                first = false;
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {

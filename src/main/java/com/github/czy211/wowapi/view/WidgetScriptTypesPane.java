@@ -47,7 +47,7 @@ public class WidgetScriptTypesPane extends BaseApiPane {
             Document document = Jsoup.connect(API_URL).get();
             connectSuccess();
 
-            Elements elements = document.select("span.mw-headline, dd");
+            Elements elements = document.select("span.mw-headline,dd:has(a[title^=UIHANDLER ]:eq(0))");
             int total = elements.size();
             int current = 0;
             String name = "";
@@ -57,22 +57,13 @@ public class WidgetScriptTypesPane extends BaseApiPane {
                 updateProgress((double) current / total);
 
                 String text = element.text();
-                if (text.startsWith("UI ") || text.startsWith("DEPRECATED ") || text.startsWith("REMOVED ")) {
-                    continue;
-                }
                 if ("span".equals(element.tagName())) {
                     // 标签名是 “span”，则匹配到 widget 名称，添加之前保存到列表的 scriptType
                     appendScriptTypes(scriptTypes, sb, name);
                     // 更新 widget 名
                     name = text;
                 } else {
-                    Element link = element.selectFirst("a");
-                    if (link != null) {
-                        String title = link.attr("title");
-                        if (title != null && title.startsWith("UIHANDLER ")) {
-                            scriptTypes.add("| '\"" + text + "\"' ");
-                        }
-                    }
+                    scriptTypes.add("| '\"" + text + "\"' ");
                 }
             }
             appendScriptTypes(scriptTypes, sb, name);
