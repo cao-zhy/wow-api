@@ -121,7 +121,7 @@ public class GlobalVariablesPane extends BaseApiPane {
                                         if (!"".equals(parentName)) {
                                             // 使用父元素的名称替换 “$parent”
                                             name = name.replace(CHILD_NAME_PREFIX, parentName);
-                                            index++;
+                                            index = i;
                                             break;
                                         }
                                     }
