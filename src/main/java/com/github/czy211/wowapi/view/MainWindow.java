@@ -52,14 +52,14 @@ public class MainWindow extends Application {
                 EnumVersionType.TIMESTAMP);
         LuaApiPane luaApiPane = new LuaApiPane("Lua_API.lua", EnumVersionType.TIMESTAMP);
         GlobalStringsPane globalStringsPane = new GlobalStringsPane("Global_Strings.lua", EnumVersionType.BUILD);
-        ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_Id.lua", EnumVersionType.BUILD);
+        ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_ID.lua", EnumVersionType.BUILD);
         AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.lua", EnumVersionType.BUILD);
         SystemApiPane systemApiPane = new SystemApiPane("System_API.lua", EnumVersionType.BUILD);
-        GlobalVariablesPane globalVariablesPane = new GlobalVariablesPane("Global_Variables.lua", EnumVersionType.NONE);
+        ParseFilesPane parseFilesPane = new ParseFilesPane("Parsed_File.lua", EnumVersionType.NONE);
 
         mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane, widgetApiPane,
                 widgetScriptHandlersPane, luaApiPane, globalStringsPane, artTextureIdPane, atlasInfoPane, systemApiPane,
-                globalVariablesPane);
+                parseFilesPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {
             Node node = mainPane.getChildren().get(i);
@@ -75,11 +75,11 @@ public class MainWindow extends Application {
                 refreshPane(mainPane);
             }
         });
-        globalVariablesPane.getBtSelect().setOnAction(event -> {
+        parseFilesPane.getBtSelect().setOnAction(event -> {
             File filepath = chooser.showDialog(primaryStage);
-            btSelectOnClick(filepath, globalVariablesPane.getTfBicPath(), PropConst.BIC_PATH);
+            btSelectOnClick(filepath, parseFilesPane.getTfBicPath(), PropConst.BIC_PATH);
             if (filepath != null) {
-                globalVariablesPane.getBtDownload().setDisable(false);
+                parseFilesPane.getBtDownload().setDisable(false);
             }
         });
 

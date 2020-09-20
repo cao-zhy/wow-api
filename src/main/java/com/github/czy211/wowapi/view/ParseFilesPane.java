@@ -21,7 +21,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class GlobalVariablesPane extends BaseApiPane {
+public class ParseFilesPane extends BaseApiPane {
     private static final String CHILD_NAME_PREFIX = "$parent";
     private static final ArrayList<String> FRAMES = new ArrayList<>();
     private static final Map<String, Template> TEMPLATE_MAP = new HashMap<>();
@@ -40,7 +40,7 @@ public class GlobalVariablesPane extends BaseApiPane {
     private TextField tfBicPath;
     private Button btSelect;
 
-    public GlobalVariablesPane(String name, EnumVersionType versionType) {
+    public ParseFilesPane(String name, EnumVersionType versionType) {
         super(name, versionType);
         lbBicName = new Label("BlizzardInterfaceCode");
         tfBicPath = new TextField();
