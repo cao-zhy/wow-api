@@ -37,5 +37,8 @@ public class WidgetConst {
             }
         }
         WIDGET_HIERARCHY = sb.toString();
+
+        WIDGETS.put("Intrinsic", new String[]{"DropDownToggleButton", "ContainedAlertFrame", "ItemButton",
+                "ScrollBarButton", "ScrollingMessageFrame"});
     }
 }

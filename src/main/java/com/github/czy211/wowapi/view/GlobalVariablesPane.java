@@ -1,6 +1,8 @@
 package com.github.czy211.wowapi.view;
 
 import com.github.czy211.wowapi.constant.EnumVersionType;
+import com.github.czy211.wowapi.constant.WidgetConst;
+import com.github.czy211.wowapi.model.Template;
 import com.github.czy211.wowapi.util.Utils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,26 +23,22 @@ import java.util.*;
 
 public class GlobalVariablesPane extends BaseApiPane {
     private static final String CHILD_NAME_PREFIX = "$parent";
-    private static final HashMap<String, String> INTRINSIC_MIXIN = new HashMap<>();
+    private static final ArrayList<String> FRAMES = new ArrayList<>();
+    private static final Map<String, Template> TEMPLATE_MAP = new HashMap<>();
 
     static {
-        INTRINSIC_MIXIN.put("DropDownToggleButton", "DropDownToggleButtonMixin");
-        INTRINSIC_MIXIN.put("ContainedAlertFrame", "ContainedAlertFrameMixin");
-        INTRINSIC_MIXIN.put("ItemButton", "ItemButtonMixin");
-        INTRINSIC_MIXIN.put("ScrollingMessageFrame", "ScrollingMessageFrameMixin");
+        FRAMES.add("Frame");
+        FRAMES.addAll(Arrays.asList(WidgetConst.WIDGETS.get("Frame")));
+        FRAMES.addAll(Arrays.asList(WidgetConst.WIDGETS.get("Model")));
+        FRAMES.addAll(Arrays.asList(WidgetConst.WIDGETS.get("PlayerModel")));
+        FRAMES.addAll(Arrays.asList(WidgetConst.WIDGETS.get("Button")));
+        FRAMES.addAll(Arrays.asList(WidgetConst.WIDGETS.get("POIFrame")));
+        FRAMES.addAll(Arrays.asList(WidgetConst.WIDGETS.get("Intrinsic")));
     }
 
     private Label lbBicName;
     private TextField tfBicPath;
     private Button btSelect;
-    /**
-     * 模板名称和它的子全局变量名称映射表，全局变量名称和它对应的类型映射
-     */
-    private HashMap<String, HashMap<String, String>> templates = new HashMap<>();
-    /**
-     * 模板名称和它的父类名称映射表
-     */
-    private HashMap<String, ArrayList<String>> parents = new HashMap<>();
 
     public GlobalVariablesPane(String name, EnumVersionType versionType) {
         super(name, versionType);
@@ -64,12 +62,12 @@ public class GlobalVariablesPane extends BaseApiPane {
         }
     }
 
-    public void download(File path, StringBuilder sb, HashSet<String> set, Progress progress) {
+    public void parseFiles(File path, StringBuilder sb, HashSet<String> set, Progress progress) {
         File[] filePaths = path.listFiles();
         if (filePaths != null) {
             for (File inPath : filePaths) {
                 if (inPath.isDirectory()) {
-                    download(inPath, sb, set, progress);
+                    parseFiles(inPath, sb, set, progress);
                 } else {
                     String filename = inPath.getName();
                     try {
@@ -77,7 +75,7 @@ public class GlobalVariablesPane extends BaseApiPane {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,
                                 StandardCharsets.UTF_8));
                         if (filename.endsWith(".lua")) {
-                            // 遍历 lua 文件
+                            // 解析 lua 文件
                             String line;
                             while ((line = reader.readLine()) != null) {
                                 line = line.trim();
@@ -100,58 +98,20 @@ public class GlobalVariablesPane extends BaseApiPane {
                                     sb.append("---@class ").append(name).append("\n").append(name)
                                             .append(" = {}\n\n");
                                 }
-                                // 因为暴雪使用了 local 定义 TickerPrototype，所以要添加它的函数
+                                // 添加 TickerPrototype 函数，因为暴雪使用 local 定义 TickerPrototype
                                 if ("TickerPrototype".equals(name)) {
                                     sb.append(line).append(" end\n\n");
                                 }
                             }
                         } else if (filename.endsWith(".xml")) {
+                            // 解析 xml 文件
                             Document document = Jsoup.parse(inputStream, "UTF-8", "", Parser.xmlParser());
-                            Elements elements = document.select("Ui > [name]:not([virtual=true]), "
-                                    + "Ui > [name]:not([virtual=true]) [name]:not([virtual=true])");
+                            Elements elements = document.select("Ui>[name]:not([virtual=true],[intrinsic=true])");
                             for (Element element : elements) {
-                                String name = element.attr("name");
-
-                                // 处理名称以 “$parent” 开头的全局变量
-                                int index = -1;
-                                while (name.startsWith(CHILD_NAME_PREFIX)) {
-                                    for (int i = index + 1; i < element.parents().size(); i++) {
-                                        Element parent = element.parents().get(i);
-                                        String parentName = parent.attr("name");
-                                        if (!"".equals(parentName)) {
-                                            // 使用父元素的名称替换 “$parent”
-                                            name = name.replace(CHILD_NAME_PREFIX, parentName);
-                                            index = i;
-                                            break;
-                                        }
-                                    }
-                                }
-
                                 String tagName = element.tagName();
-                                tagName = replaceTagName(tagName);
-                                String inherits = element.attr("inherits");
-                                String mixins = element.attr("mixin");
-                                if ("".equals(mixins)) {
-                                    mixins = element.attr("secureMixin");
+                                if (FRAMES.contains(tagName)) {
+                                    appendWidget(sb, element);
                                 }
-
-                                if (!"".equals(inherits) && !"FontString".equals(tagName)) {
-                                    for (String inherit : inherits.split(", |,")) {
-                                        // 添加从父类继承的全局变量
-                                        appendParentGlobalVars(sb, name, inherit);
-                                    }
-                                }
-
-                                String intrinsics = element.attr("intrinsic");
-                                if ("true".equals(intrinsics)) {
-                                    sb.append("---@class ").append(name).append(":").append(tagName).append("\n");
-                                } else {
-                                    sb.append("---@type ").append(tagName).append(
-                                            getOtherTypes(tagName, inherits, mixins)).append("\n");
-                                }
-                                sb.append(name).append(" = {\n");
-                                appendParentKeys(sb, element, 1);
-                                sb.append("}\n\n");
                             }
                         }
                     } catch (IOException e) {
@@ -164,33 +124,73 @@ public class GlobalVariablesPane extends BaseApiPane {
         }
     }
 
-    public void initialTemplates(File path, StringBuilder sb) {
+    public void appendWidget(StringBuilder sb, Element element) {
+        appendTypes(sb, element);
+        String name = handleName(element);
+        sb.append(name).append(" = {\n");
+        appendParentKeys(sb, element, 1);
+        sb.append("}\n\n");
+
+        String inherits = element.attr("inherits");
+        if (!"".equals(inherits)) {
+            String[] inheritList = inherits.split(", |,");
+            for (String inherit : inheritList) {
+                Template template = TEMPLATE_MAP.get(inherit);
+                if (template != null) {
+                    for (Map.Entry<String, Element> entry : template.getWidgets().entrySet()) {
+                        String newName = entry.getKey().replace(CHILD_NAME_PREFIX, name);
+                        Element el = entry.getValue().attr("name", newName);
+                        appendWidget(sb, el);
+                    }
+                }
+            }
+        }
+
+        for (Element el : element.children().select("[name]:not([virtual=true],[parentKey])")) {
+            appendWidget(sb, el);
+        }
+    }
+
+    public void parseForTemplates(File path, StringBuilder sb, Progress progress) {
         File[] filePaths = path.listFiles();
         if (filePaths != null) {
             for (File inPath : filePaths) {
                 if (inPath.isDirectory()) {
-                    initialTemplates(inPath, sb);
+                    parseForTemplates(inPath, sb, progress);
                 } else {
                     String filename = inPath.getName();
                     if (filename.endsWith(".xml")) {
                         try {
                             InputStream in = new FileInputStream(inPath);
                             Document document = Jsoup.parse(in, "UTF-8", "", Parser.xmlParser());
-                            // Ui 标签下的非字体类型的一级元素 virtual 属性值是 true 的是模板类型
-                            Elements elements = document.select("Ui > [virtual=true]:not(Font,FontString,FontFamily)");
+                            Elements elements = document.select("[intrinsic=true],[name]:not([name^=$parent])"
+                                    + "[virtual=true]");
                             for (Element element : elements) {
-                                String name = element.attr("name");
-                                if (!name.contains("-")) {
+                                String tagName = element.tagName();
+                                if (FRAMES.contains(tagName)) {
+                                    String name = element.attr("name");
+                                    Template template = new Template(name);
                                     String inherits = element.attr("inherits");
                                     if (!"".equals(inherits)) {
-                                        // 把模板的父类添加进 parents
-                                        parents.put(name, new ArrayList<>(Arrays.asList(inherits.split(", |,"))));
+                                        template.getInterfaces().addAll(Arrays.asList(inherits.split(", |,")));
                                     }
-                                    // 添加模板的子全局变量名称后缀
-                                    templates.put(name, new HashMap<>());
-                                    addGlobalVarSuffixNames(element, name);
-                                    sb.append("---@class ").append(name).append("\n").append(name).append(" = {\n");
-                                    // 添加模板的字段
+                                    String mixins = element.attr("mixin") + element.attr("secureMixin");
+                                    if (!"".equals(mixins)) {
+                                        template.getInterfaces().addAll(Arrays.asList(mixins.split(", |,")));
+                                    }
+                                    Elements els = element.select("[name^=$parent]:not([virtual=true],[parentKey])");
+                                    if (els.size() > 0) {
+                                        for (Element el : els) {
+                                            String widgetName = handleName(el);
+                                            template.getWidgets().put(widgetName, el);
+                                        }
+                                    }
+                                    TEMPLATE_MAP.put(name, template);
+                                    sb.append("---@class ").append(name);
+                                    if ("true".equals(element.attr("intrinsic"))) {
+                                        sb.append(":").append(element.tagName());
+                                    }
+                                    sb.append("\n").append(name).append(" = {\n");
                                     appendParentKeys(sb, element, 1);
                                     sb.append("}\n\n");
                                 }
@@ -199,89 +199,104 @@ public class GlobalVariablesPane extends BaseApiPane {
                             e.printStackTrace();
                         }
                     }
+                    progress.current += getFileSize(inPath);
+                    updateProgress(progress.getProgress());
                 }
             }
         }
     }
 
-    public void appendParentKeys(StringBuilder sb, Element element, int index) {
-        Elements elements = element.select("* > [parentKey]");
-        for (Element e : elements) {
-            String parentKey = e.attr("parentKey");
-            if (!parentKey.contains("-")) {
-                String tagName = e.tagName();
-                tagName = replaceTagName(tagName);
-                String inherits = e.attr("inherits");
-                String mixins = e.attr("mixin");
-                if ("".equals(mixins)) {
-                    mixins = e.attr("secureMixin");
-                }
-
-                for (int i = 0; i < index; i++) {
-                    sb.append("    ");
-                }
-                sb.append("---@type ").append(tagName).append(getOtherTypes(tagName, inherits, mixins)).append("\n");
-                for (int i = 0; i < index; i++) {
-                    sb.append("    ");
-                }
-                sb.append(parentKey).append(" = {\n");
-                appendParentKeys(sb, e, index + 1);
-                for (int i = 0; i < index; i++) {
-                    sb.append("    ");
-                }
-                sb.append("},\n");
-            }
-        }
-    }
-
-    public void addGlobalVarSuffixNames(Element element, String templateName) {
+    public String handleName(Element element) {
         String name = element.attr("name");
-        Elements elements = element.select("* > [name^=" + CHILD_NAME_PREFIX + "]");
-        for (Element e : elements) {
-            HashMap<String, String> map = templates.get(templateName);
-            String childName = e.attr("name");
-            if (!name.equals(templateName)) {
-                childName = childName.replace(CHILD_NAME_PREFIX, name);
+        int index = -1;
+        while (name.startsWith(CHILD_NAME_PREFIX)) {
+            for (int i = index + 1; i < element.parents().size(); i++) {
+                Element parent = element.parents().get(i);
+                if ("true".equals(parent.attr("virtual"))) {
+                    return name;
+                }
+                String parentName = parent.attr("name");
+                if (!"".equals(parentName)) {
+                    // 使用父元素的名称替换 “$parent”
+                    name = name.replace(CHILD_NAME_PREFIX, parentName);
+                    index = i;
+                    break;
+                }
             }
-            String tagName = e.tagName();
-            tagName = replaceTagName(tagName);
-            map.put(childName.substring(CHILD_NAME_PREFIX.length()), tagName);
-            addGlobalVarSuffixNames(e, templateName);
+        }
+        return name;
+    }
+
+    public void appendParentKeys(StringBuilder sb, Element element, int numBlank) {
+        Elements elements = element.select(">[parentKey]:not([virtual=true])");
+        for (Element el : elements) {
+            for (int i = 0; i < numBlank; i++) {
+                sb.append("    ");
+            }
+
+            appendTypes(sb, el);
+
+            for (int i = 0; i < numBlank; i++) {
+                sb.append("    ");
+            }
+
+            String name = el.attr("parentKey");
+            if (name.contains("-")) {
+                name = "[\"" + name + "\"]";
+            }
+            sb.append(name).append(" = {\n");
+            appendParentKeys(sb, el, numBlank + 1);
+
+            for (int i = 0; i < numBlank; i++) {
+                sb.append("    ");
+            }
+            sb.append("},\n");
+        }
+        for (Element el : element.children()) {
+            appendParentKeys(sb, el, numBlank);
         }
     }
 
-    public void appendInherits(StringBuilder sb, String name) {
-        ArrayList<String> parentNames = parents.get(name);
-        if (parentNames != null) {
-            for (String parentName : parentNames) {
-                sb.append("|").append(parentName);
-                appendInherits(sb, parentName);
+    public void appendTypes(StringBuilder sb, Element element) {
+        String tagName = element.tagName();
+        sb.append("---@type ").append(handleTagName(tagName));
+
+        Template template = TEMPLATE_MAP.get(tagName);
+        if (template != null) {
+            appendInterfaces(sb, template.getInterfaces());
+        }
+        if (FRAMES.contains(tagName)) {
+            String inherits = element.attr("inherits");
+            if (!"".equals(inherits)) {
+                appendInterfaces(sb, Arrays.asList(inherits.split(", |,")));
+            }
+        }
+        String mixins = element.attr("mixin") + element.attr("secureMixin");
+        if (!"".equals(mixins)) {
+            for (String mixin : mixins.split(", |,")) {
+                sb.append("|").append(mixin);
+            }
+        }
+        sb.append("\n");
+    }
+
+    public void appendInterfaces(StringBuilder sb, List<String> inherits) {
+        for (String inherit : inherits) {
+            sb.append("|").append(inherit);
+            Template template = TEMPLATE_MAP.get(inherit);
+            if (template != null) {
+                appendInterfaces(sb, template.getInterfaces());
             }
         }
     }
 
-    public void appendParentGlobalVars(StringBuilder sb, String name, String inherit) {
-        HashMap<String, String> map = templates.get(inherit);
-        if (map != null) {
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                // 名称是当前 widget 的名称加上子名称后缀
-                sb.append("---@type ").append(entry.getValue()).append("\n").append(name).append(entry.getKey())
-                        .append(" = {}\n\n");
-            }
-        }
-        ArrayList<String> parentNames = parents.get(inherit);
-        if (parentNames != null) {
-            for (String parentName : parentNames) {
-                appendParentGlobalVars(sb, name, parentName);
-            }
-        }
-    }
-
-    public String replaceTagName(String tagName) {
-        if (tagName.endsWith("Texture")) {
+    public String handleTagName(String tagName) {
+        if (tagName.endsWith("Texture") && !"MaskTexture".equals(tagName)) {
             tagName = "Texture";
         } else if ("ButtonText".equals(tagName)) {
             tagName = "FontString";
+        } else if ("ScrollingMessageFrame".equals(tagName)) {
+            tagName += "|FontInstance";
         }
         return tagName;
     }
@@ -313,39 +328,24 @@ public class GlobalVariablesPane extends BaseApiPane {
         return line.substring(9, index);
     }
 
-    public StringBuilder getOtherTypes(String tagName, String inherits, String mixins) {
-        StringBuilder sb = new StringBuilder();
-        String intrinsicMixin = INTRINSIC_MIXIN.get(tagName);
-        if (intrinsicMixin != null) {
-            sb.append("|").append(intrinsicMixin);
-        }
-        if (!"".equals(inherits) && !"FontString".equals(tagName)) {
-            String[] inheritList = inherits.split(", |,");
-            for (String inherit : inheritList) {
-                if (!inherit.contains("-")) {
-                    sb.append("|").append(inherit);
-                    appendInherits(sb, inherit);
-                }
-            }
-        }
-        if (!"".equals(mixins)) {
-            String[] mixinList = mixins.split(", |,");
-            for (String mixin : mixinList) {
-                sb.append("|").append(mixin);
-            }
-        }
-        return sb;
-    }
-
     @Override
     public void download() throws IOException {
         File inPath = new File(Utils.getBicPath());
+        Progress progress = new Progress(getFileSize(inPath) * 2, 0);
+        connectSuccess();
         StringBuilder sb = new StringBuilder();
+
+        parseForTemplates(inPath, sb, progress);
+        if (sb.length() > 0) {
+            try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + "Templates.lua", "UTF-8")) {
+                writer.println(sb);
+            }
+        }
+
+        sb = new StringBuilder();
         HashSet<String> set = new HashSet<>();
 
-        initialTemplates(inPath, sb);
-        connectSuccess();
-        download(inPath, sb, set, new Progress(getFileSize(inPath), 0));
+        parseFiles(inPath, sb, set, progress);
         if (sb.length() > 0) {
             try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
                 writer.println(sb);
@@ -380,22 +380,6 @@ public class GlobalVariablesPane extends BaseApiPane {
 
     public void setBtSelect(Button btSelect) {
         this.btSelect = btSelect;
-    }
-
-    public HashMap<String, HashMap<String, String>> getTemplates() {
-        return templates;
-    }
-
-    public void setTemplates(HashMap<String, HashMap<String, String>> templates) {
-        this.templates = templates;
-    }
-
-    public HashMap<String, ArrayList<String>> getParents() {
-        return parents;
-    }
-
-    public void setParents(HashMap<String, ArrayList<String>> parents) {
-        this.parents = parents;
     }
 
     static class Progress {
