@@ -32,26 +32,13 @@ public class LuaApiPane extends BaseApiPane {
                 current++;
                 updateProgress((double) current / total);
 
-                String text = element.text();
-                String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
-                Element link = element.selectFirst("a");
-                String title = link.attr("title");
-                String url = "";
-                if (!title.endsWith("(page does not exist)")) {
-                    url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
-                }
-                String name = link.text();
-                sb.append("--- ").append(description).append(url).append("\nfunction ").append(name).append("(");
-                if (text.indexOf(")") - text.indexOf("(") > 1) {
-                    sb.append("...");
-                }
-                sb.append(") end\n\n");
+                appendFunction(sb, element);
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
                     writer.println(EnumVersionType.PREFIX + getRemoteVersion());
-                    writer.println();
-                    writer.println(sb);
+                    writer.println("\nbit = {}\n");
+                    writer.print(sb);
                 }
             }
         } catch (IOException e) {

@@ -13,6 +13,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import org.jsoup.nodes.Element;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
@@ -25,10 +26,18 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class BaseApiPane extends BorderPane {
+    private static final HashMap<String, String> COMMENTS = new HashMap<>();
+
+    static {
+        COMMENTS.put("Frame:CreateFontString", "---@return FontString\n");
+        COMMENTS.put("Frame:CreateTexture", "---@return Texture\n");
+    }
+
     private String name;
     private Label lbName;
     private Label lbVersion;
@@ -287,6 +296,30 @@ public abstract class BaseApiPane extends BorderPane {
         } catch (IOException e) {
             throw new IOException(urlStr, e);
         }
+    }
+
+    public StringBuilder appendFunction(StringBuilder sb, Element element) {
+        Element link = element.selectFirst("a");
+        String title = link.attr("title");
+        String text = element.text();
+        String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
+        String url = "";
+        if (!title.endsWith("(page does not exist)")) {
+            url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
+        }
+        String name = link.text();
+        sb.append("--- ").append(description).append(url).append("\n");
+        if (COMMENTS.get(name) != null) {
+            sb.append(COMMENTS.get(name));
+        }
+        sb.append("function ").append(name);
+        StringBuilder after = new StringBuilder("(");
+        if (text.indexOf(")") - text.indexOf("(") > 1) {
+            after.append("...");
+        }
+        after.append(") end\n\n");
+        sb.append(after);
+        return after;
     }
 
     public abstract void download() throws IOException;

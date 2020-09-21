@@ -44,25 +44,15 @@ public class WidgetApiPane extends BaseApiPane {
                 current++;
                 updateProgress((double) current / total);
 
-                String text = element.text();
-                Element link = element.selectFirst("a");
-                String title = link.attr("title");
-                String description = text.replaceAll("\\[", "{").replaceAll("]", "}");
-                String url = "";
-                if (!title.endsWith("(page does not exist)")) {
-                    url = "\n---\n--- [" + LinkConst.WIKI_BASE + link.attr("href") + "]";
-                }
-                String front = "--- " + description + url + "\nfunction ";
-                String back = "(" + (text.indexOf(")") - text.indexOf("(") > 1 ? "..." : "") + ") end\n\n";
-                String name = link.text();
-                sb.append(front).append(name).append(back);
+                StringBuilder after = appendFunction(sb, element);
 
                 // 复制函数
-                String widgetName = name.split(":")[0];
-                String[] widgets = COPY_FUNCTIONS.get(widgetName);
+                String funcName = element.selectFirst("a").text();
+                String name = funcName.split(":")[0];
+                String[] widgets = COPY_FUNCTIONS.get(name);
                 if (widgets != null) {
-                    for (String widget : widgets) {
-                        sb.append("function ").append(name.replaceFirst(widgetName, widget)).append(back);
+                    for (String newName : widgets) {
+                        sb.append("function ").append(funcName.replaceFirst(name, newName)).append(after);
                     }
                 }
             }
