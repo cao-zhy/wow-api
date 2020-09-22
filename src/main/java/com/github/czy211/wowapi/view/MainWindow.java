@@ -48,10 +48,10 @@ public class MainWindow extends Application {
         WidgetHierarchyPane widgetHierarchyPane = new WidgetHierarchyPane("Widget_Hierarchy.png", EnumVersionType.NONE);
         WowApiPane wowApiPane = new WowApiPane("WoW_API.lua", EnumVersionType.TIMESTAMP);
         WidgetApiPane widgetApiPane = new WidgetApiPane("Widget_API.lua", EnumVersionType.TIMESTAMP);
-        WidgetScriptHandlersPane widgetScriptHandlersPane = new WidgetScriptHandlersPane("Widget_Script_Handlers.lua",
+        WidgetScriptHandlersPane widgetScriptHandlersPane = new WidgetScriptHandlersPane("Widget_Script_Handlers.txt",
                 EnumVersionType.TIMESTAMP);
         LuaApiPane luaApiPane = new LuaApiPane("Lua_API.lua", EnumVersionType.TIMESTAMP);
-        GlobalStringsPane globalStringsPane = new GlobalStringsPane("Global_Strings.lua", EnumVersionType.BUILD);
+        GlobalStringsPane globalStringsPane = new GlobalStringsPane("Global_Strings.txt", EnumVersionType.BUILD);
         ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_ID.lua", EnumVersionType.BUILD);
         AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.lua", EnumVersionType.BUILD);
         SystemApiPane systemApiPane = new SystemApiPane("System_API.lua", EnumVersionType.BUILD);

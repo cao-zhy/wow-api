@@ -22,7 +22,7 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
     public void download() throws IOException {
         try {
             StringBuilder sb = new StringBuilder();
-            sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\nlocal widgetScriptHandlers = {\n");
+            sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
             Document document = Jsoup.connect(API_URL).get();
             Elements elements = document.select("span.mw-headline:not(#Widget_API,#Widget_hierarchy,#Example,"
                     + "#References),dd:has(a[title^=UIHANDLER ]:eq(0))");
@@ -36,17 +36,18 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
                 String text = element.text();
                 if ("span".equals(element.tagName())) {
                     if (current > 1) {
-                        sb.append("    },\n");
+                        sb.append("}\n");
                     }
-                    sb.append("    ").append(text).append(" = {\n");
+                    sb.append(text).append(" = {\n");
                 } else {
-                    sb.append("        \"").append(text).append("\",\n");
+                    sb.append("    \"").append(text).append("\",\n");
                 }
                 current++;
                 updateProgress(current / total);
             }
+            sb.append("}\n");
             try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
-                writer.println(sb + "    },\n}");
+                writer.print(sb);
             }
         } catch (IOException e) {
             throw new IOException(API_URL, e);
