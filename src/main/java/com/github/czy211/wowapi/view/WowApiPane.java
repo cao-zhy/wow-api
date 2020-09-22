@@ -35,21 +35,18 @@ public class WowApiPane extends BaseApiPane {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
                 }
-                current++;
-                updateProgress(current / total);
-
                 if ("span".equals(element.tagName())) {
                     // 遍历完成
                     break;
                 }
-
                 appendFunction(sb, element);
-
                 String name = element.selectFirst("a").text();
                 if (name.startsWith("C_")) {
                     String namespace = name.substring(0, name.indexOf("."));
                     namespaces.add(namespace);
                 }
+                current++;
+                updateProgress(current / total);
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {

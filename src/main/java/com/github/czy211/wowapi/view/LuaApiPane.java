@@ -32,10 +32,9 @@ public class LuaApiPane extends BaseApiPane {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
                 }
+                appendFunction(sb, element);
                 current++;
                 updateProgress(current / total);
-
-                appendFunction(sb, element);
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {

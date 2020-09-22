@@ -45,11 +45,7 @@ public class WidgetApiPane extends BaseApiPane {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
                 }
-                current++;
-                updateProgress(current / total);
-
                 StringBuilder after = appendFunction(sb, element);
-
                 // 复制函数
                 String funcName = element.selectFirst("a").text();
                 String name = funcName.split(":")[0];
@@ -59,6 +55,8 @@ public class WidgetApiPane extends BaseApiPane {
                         sb.append("function ").append(funcName.replaceFirst(name, newName)).append(after);
                     }
                 }
+                current++;
+                updateProgress(current / total);
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {

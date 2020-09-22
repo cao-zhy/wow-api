@@ -33,9 +33,6 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
                 }
-                current++;
-                updateProgress(current / total);
-
                 String text = element.text();
                 if ("span".equals(element.tagName())) {
                     if (current > 1) {
@@ -45,6 +42,8 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
                 } else {
                     sb.append("        \"").append(text).append("\",\n");
                 }
+                current++;
+                updateProgress(current / total);
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
