@@ -271,7 +271,7 @@ public abstract class BaseApiPane extends BorderPane {
             connection.setRequestProperty("Referer", LinkConst.FXML_BASE + "/" + fileBuild);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                     + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.56 Safari/537.36 Edg/79.0.309.40");
-            int total = connection.getContentLength();
+            double total = connection.getContentLength();
             int current = 0;
             InputStream inputStream = connection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
@@ -284,7 +284,7 @@ public abstract class BaseApiPane extends BorderPane {
                 }
                 sb.append(line).append("\n");
                 current += line.length();
-                updateProgress((double) current / total);
+                updateProgress(current / total);
             }
             if (sb.length() > 0) {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + name, "UTF-8")) {

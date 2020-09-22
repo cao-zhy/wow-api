@@ -26,14 +26,14 @@ public class LuaApiPane extends BaseApiPane {
             connectSuccess();
 
             Elements elements = document.select("dd:has(a[title^=API ]:eq(0)):not(:matches(deprecated))");
-            int total = elements.size();
+            double total = elements.size();
             int current = 0;
             for (Element element : elements) {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
                 }
                 current++;
-                updateProgress((double) current / total);
+                updateProgress(current / total);
 
                 appendFunction(sb, element);
             }

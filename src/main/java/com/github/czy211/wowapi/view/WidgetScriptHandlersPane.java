@@ -27,14 +27,14 @@ public class WidgetScriptHandlersPane extends BaseApiPane {
 
             Elements elements = document.select("span.mw-headline:not(#Widget_API,#Widget_hierarchy,#Example,"
                     + "#References),dd:has(a[title^=UIHANDLER ]:eq(0))");
-            int total = elements.size();
+            double total = elements.size();
             int current = 0;
             for (Element element : elements) {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
                 }
                 current++;
-                updateProgress((double) current / total);
+                updateProgress(current / total);
 
                 String text = element.text();
                 if ("span".equals(element.tagName())) {

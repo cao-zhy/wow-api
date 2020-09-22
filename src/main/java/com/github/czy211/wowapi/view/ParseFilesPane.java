@@ -24,7 +24,7 @@ public class ParseFilesPane extends BaseApiPane {
     private TextField tfBicPath;
     private Button btSelect;
     private double total;
-    private double current;
+    private long current;
 
     public ParseFilesPane(String name, EnumVersionType versionType) {
         super(name, versionType);

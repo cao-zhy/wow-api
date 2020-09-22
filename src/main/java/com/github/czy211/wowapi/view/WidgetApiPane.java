@@ -38,7 +38,7 @@ public class WidgetApiPane extends BaseApiPane {
 
             Elements elements = document.select("dd:not(:matches(^(UI|DEPRECATED|REMOVED) ))"
                     + ":has(a[title^=API ]:eq(0))");
-            int total = elements.size();
+            double total = elements.size();
             int current = 0;
 
             for (Element element : elements) {
@@ -46,7 +46,7 @@ public class WidgetApiPane extends BaseApiPane {
                     return;
                 }
                 current++;
-                updateProgress((double) current / total);
+                updateProgress(current / total);
 
                 StringBuilder after = appendFunction(sb, element);
 

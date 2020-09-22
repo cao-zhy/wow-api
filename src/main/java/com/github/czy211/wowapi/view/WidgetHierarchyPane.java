@@ -55,7 +55,7 @@ public class WidgetHierarchyPane extends BaseApiPane {
         try {
             URL url = new URL(urlStr);
             URLConnection connection = url.openConnection();
-            int total = connection.getContentLength();
+            double total = connection.getContentLength();
             try (InputStream in = new BufferedInputStream(connection.getInputStream());
                  OutputStream out = new BufferedOutputStream(new FileOutputStream(Utils.getDownloadPath()
                          + getName()))) {
@@ -71,7 +71,7 @@ public class WidgetHierarchyPane extends BaseApiPane {
                     out.write(data, 0, length);
                     out.flush();
                     current += length;
-                    updateProgress((double) current / total);
+                    updateProgress(current / total);
                 }
             }
         } catch (IOException e) {
