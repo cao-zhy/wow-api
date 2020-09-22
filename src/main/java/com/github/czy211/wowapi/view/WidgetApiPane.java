@@ -2,7 +2,6 @@ package com.github.czy211.wowapi.view;
 
 import com.github.czy211.wowapi.constant.EnumVersionType;
 import com.github.czy211.wowapi.constant.LinkConst;
-import com.github.czy211.wowapi.constant.WidgetConst;
 import com.github.czy211.wowapi.util.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,7 +17,9 @@ public class WidgetApiPane extends BaseApiPane {
     private static final HashMap<String, String[]> COPY_FUNCTIONS = new HashMap<>();
 
     static {
-        COPY_FUNCTIONS.put("FontInstance", new String[]{"FontString", "EditBox", "MessageFrame", "SimpleHTML"});
+        COPY_FUNCTIONS.put("ScriptObject", new String[]{"Animation", "AnimationGroup", "Frame"});
+        COPY_FUNCTIONS.put("FontInstance", new String[]{"FontString", "EditBox", "MessageFrame", "SimpleHTML",
+                "ScrollingMessageFrame"});
         COPY_FUNCTIONS.put("Scale", new String[]{"LineScale"});
         COPY_FUNCTIONS.put("Translation", new String[]{"LineTranslation"});
         COPY_FUNCTIONS.put("Texture", new String[]{"MaskTexture", "Line"});
@@ -60,7 +61,7 @@ public class WidgetApiPane extends BaseApiPane {
                 try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
                     writer.println(EnumVersionType.PREFIX + getRemoteVersion());
                     writer.println();
-                    writer.print(WidgetConst.WIDGET_HIERARCHY);
+                    writer.print(WidgetHierarchyPane.WIDGET_HIERARCHY);
                     writer.print(sb);
                 }
             }
