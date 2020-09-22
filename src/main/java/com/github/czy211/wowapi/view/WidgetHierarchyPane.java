@@ -59,11 +59,10 @@ public class WidgetHierarchyPane extends BaseApiPane {
             try (InputStream in = new BufferedInputStream(connection.getInputStream());
                  OutputStream out = new BufferedOutputStream(new FileOutputStream(Utils.getDownloadPath()
                          + getName()))) {
-                connectSuccess();
-
                 byte[] data = new byte[8192];
                 int current = 0;
                 int length;
+                connectSuccess();
                 while ((length = in.read(data)) != -1) {
                     if (Thread.currentThread().isInterrupted()) {
                         return;

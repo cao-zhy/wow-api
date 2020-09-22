@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public class WowApiPane extends BaseApiPane {
     private static final String API_URL = LinkConst.WIKI_BASE + "/World_of_Warcraft_API";
@@ -23,14 +23,14 @@ public class WowApiPane extends BaseApiPane {
     public void download() throws IOException {
         try {
             StringBuilder sb = new StringBuilder();
-            HashSet<String> namespaces = new HashSet<>();
+            sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
+            ArrayList<String> namespaces = new ArrayList<>();
             Document document = Jsoup.connect(API_URL).get();
-            connectSuccess();
-
             Elements elements = document.select("dd:not(:matches(^(UI|DEPRECATED|REMOVED) )):has(a[title^=API ]:eq(0)),"
                     + "span#Classic_Specific_Functions");
             double total = elements.size();
             int current = 0;
+            connectSuccess();
             for (Element element : elements) {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
@@ -39,25 +39,20 @@ public class WowApiPane extends BaseApiPane {
                     // 遍历完成
                     break;
                 }
-                appendFunction(sb, element);
                 String name = element.selectFirst("a").text();
                 if (name.startsWith("C_")) {
                     String namespace = name.substring(0, name.indexOf("."));
-                    namespaces.add(namespace);
+                    if (!namespaces.contains(namespace)) {
+                        namespaces.add(namespace);
+                        sb.append(namespace).append(" = {}\n\n");
+                    }
                 }
+                appendFunction(sb, element);
                 current++;
                 updateProgress(current / total);
             }
-            if (sb.length() > 0) {
-                try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
-                    writer.println(EnumVersionType.PREFIX + getRemoteVersion());
-                    writer.println();
-                    for (String namespace : namespaces) {
-                        writer.println(namespace + " = {}");
-                    }
-                    writer.println();
-                    writer.println(sb);
-                }
+            try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
+                writer.print(sb);
             }
         } catch (IOException e) {
             throw new IOException(API_URL, e);

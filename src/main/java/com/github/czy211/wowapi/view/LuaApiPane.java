@@ -22,12 +22,12 @@ public class LuaApiPane extends BaseApiPane {
     public void download() throws IOException {
         try {
             StringBuilder sb = new StringBuilder();
+            sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\nbit = {}\n\n");
             Document document = Jsoup.connect(API_URL).get();
-            connectSuccess();
-
             Elements elements = document.select("dd:has(a[title^=API ]:eq(0)):not(:matches(deprecated))");
             double total = elements.size();
             int current = 0;
+            connectSuccess();
             for (Element element : elements) {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
@@ -36,12 +36,8 @@ public class LuaApiPane extends BaseApiPane {
                 current++;
                 updateProgress(current / total);
             }
-            if (sb.length() > 0) {
-                try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
-                    writer.println(EnumVersionType.PREFIX + getRemoteVersion());
-                    writer.println("\nbit = {}\n");
-                    writer.print(sb);
-                }
+            try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
+                writer.print(sb);
             }
         } catch (IOException e) {
             throw new IOException(API_URL, e);
