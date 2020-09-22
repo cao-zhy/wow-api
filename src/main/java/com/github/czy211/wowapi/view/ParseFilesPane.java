@@ -64,6 +64,9 @@ public class ParseFilesPane extends BaseApiPane {
                         if (filename.endsWith(".lua")) {
                             String line;
                             while ((line = reader.readLine()) != null) {
+                                if (Thread.currentThread().isInterrupted()) {
+                                    return;
+                                }
                                 line = line.trim();
                                 String name = "";
                                 Matcher matcher = FUNCTION_PARENT_NAME.matcher(line);

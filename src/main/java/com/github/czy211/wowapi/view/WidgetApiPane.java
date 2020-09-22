@@ -42,6 +42,9 @@ public class WidgetApiPane extends BaseApiPane {
             int current = 0;
 
             for (Element element : elements) {
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
                 current++;
                 updateProgress((double) current / total);
 
