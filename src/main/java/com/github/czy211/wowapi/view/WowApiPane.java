@@ -61,6 +61,6 @@ public class WowApiPane extends BaseApiPane {
 
     @Override
     public long getRemoteVersion() throws IOException {
-        return Utils.getRemoteTimestamp(API_URL);
+        return getRemoteTimestamp(API_URL);
     }
 }

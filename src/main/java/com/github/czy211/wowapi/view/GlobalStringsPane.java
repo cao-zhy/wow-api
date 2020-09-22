@@ -1,7 +1,6 @@
 package com.github.czy211.wowapi.view;
 
 import com.github.czy211.wowapi.constant.EnumVersionType;
-import com.github.czy211.wowapi.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.HBox;
@@ -29,7 +28,7 @@ public class GlobalStringsPane extends BaseApiPane {
 
     @Override
     public long getRemoteVersion() throws IOException {
-        return Utils.getRemoteBuild(FILEPATH);
+        return getRemoteBuild(FILEPATH);
     }
 
     public ChoiceBox<String> getCbLanguage() {

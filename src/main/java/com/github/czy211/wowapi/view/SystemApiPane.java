@@ -1,7 +1,6 @@
 package com.github.czy211.wowapi.view;
 
 import com.github.czy211.wowapi.constant.EnumVersionType;
-import com.github.czy211.wowapi.util.Utils;
 import javafx.scene.layout.HBox;
 
 import java.io.IOException;
@@ -20,6 +19,6 @@ public class SystemApiPane extends BaseApiPane {
 
     @Override
     public long getRemoteVersion() throws IOException {
-        return Utils.getBuild()[1];
+        return getBuild()[1];
     }
 }

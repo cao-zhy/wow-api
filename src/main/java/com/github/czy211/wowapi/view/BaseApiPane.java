@@ -13,6 +13,8 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -25,8 +27,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -261,7 +265,7 @@ public abstract class BaseApiPane extends BorderPane {
     }
 
     public void downloadFxmlFile(String filepath, String language) throws IOException {
-        long fileBuild = Utils.getBuild()[0];
+        long fileBuild = getBuild()[0];
         String urlStr = LinkConst.FXML_BASE + "/" + fileBuild + filepath + (language == null ? "" : ("/" + language))
                 + "/get";
         try {
@@ -316,6 +320,57 @@ public abstract class BaseApiPane extends BorderPane {
         after.append(") end\n\n");
         sb.append(after);
         return after;
+    }
+
+
+    public long getRemoteTimestamp(String url) throws IOException {
+        try {
+            Document document = Jsoup.connect(url).get();
+            Element element = document.selectFirst("#footer-info-lastmod");
+            String dateTime = element.text().substring(29);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, 'at' HH:mm.", Locale.ENGLISH);
+            LocalDateTime localDateTime = LocalDateTime.parse(dateTime, formatter);
+            ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+            return zonedDateTime.toEpochSecond();
+        } catch (IOException e) {
+            throw new IOException(url, e);
+        }
+    }
+
+    public long getRemoteBuild(String filepath) throws IOException {
+        String url = LinkConst.FXML_BASE + "/live";
+        try {
+            Document document = Jsoup.connect(url).get();
+            String filename = filepath.substring(filepath.lastIndexOf("/") + 1);
+            Element tr = document.selectFirst("tr:contains(" + filename + ")");
+            // 第二个 td 是 build 信息
+            Element td = tr.select("td").get(1);
+            String text = td.text();
+            return Long.parseLong(text.substring(text.length() - 5));
+        } catch (IOException e) {
+            throw new IOException(url, e);
+        }
+    }
+
+    /**
+     * @return 第一个元素是文件的 build，第二个元素是游戏的 build
+     */
+    public long[] getBuild() throws IOException {
+        String url = LinkConst.FXML_BASE + "/live";
+        try {
+            Document document = Jsoup.connect(url).get();
+            Element element = document.selectFirst("h1");
+            long fileBuild = Long.parseLong(element.text().substring(6, 11));
+            long gameBuild = fileBuild;
+            Element moreBuilds = element.selectFirst(".morebuilds");
+            if (moreBuilds != null) {
+                String title = moreBuilds.attr("title");
+                gameBuild = Long.parseLong(title.substring(1));
+            }
+            return new long[]{fileBuild, gameBuild};
+        } catch (IOException e) {
+            throw new IOException(url, e);
+        }
     }
 
     public abstract void download() throws IOException;
