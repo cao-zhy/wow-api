@@ -54,11 +54,12 @@ public class MainWindow extends Application {
         GlobalStringsPane globalStringsPane = new GlobalStringsPane("Global_Strings.txt", EnumVersionType.BUILD);
         ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_ID.lua", EnumVersionType.BUILD);
         AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.lua", EnumVersionType.BUILD);
-        SystemApiPane systemApiPane = new SystemApiPane("System_API.lua", EnumVersionType.BUILD);
+        NumericConstantsPane numericConstantsPane = new NumericConstantsPane("Numeric_Constants.lua",
+                EnumVersionType.BUILD);
         ParseFilesPane parseFilesPane = new ParseFilesPane("Parsed_File.lua", EnumVersionType.NONE);
 
         mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane, widgetApiPane,
-                widgetScriptHandlersPane, luaApiPane, globalStringsPane, artTextureIdPane, atlasInfoPane, systemApiPane,
+                widgetScriptHandlersPane, luaApiPane, globalStringsPane, artTextureIdPane, atlasInfoPane, numericConstantsPane,
                 parseFilesPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {

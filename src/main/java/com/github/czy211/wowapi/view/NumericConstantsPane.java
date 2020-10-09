@@ -5,8 +5,8 @@ import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 
-public class SystemApiPane extends BaseApiPane {
-    public SystemApiPane(String name, EnumVersionType versionType) {
+public class NumericConstantsPane extends BaseApiPane {
+    public NumericConstantsPane(String name, EnumVersionType versionType) {
         super(name, versionType);
         HBox rightNode = (HBox) getRight();
         rightNode.getChildren().remove(getBtDownload());
