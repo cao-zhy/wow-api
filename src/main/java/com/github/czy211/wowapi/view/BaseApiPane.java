@@ -38,6 +38,7 @@ public abstract class BaseApiPane extends BorderPane {
     private static final HashMap<String, String> COMMENTS = new HashMap<>();
 
     static {
+        COMMENTS.put("Region:CreateAnimationGroup", "---@return AnimationGroup\n");
         COMMENTS.put("Frame:CreateFontString", "---@return FontString\n");
         COMMENTS.put("Frame:CreateTexture", "---@return Texture\n");
     }
