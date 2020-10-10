@@ -9,14 +9,22 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
+import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ParseFilesPane extends BaseApiPane {
+    private static final ArrayList<String> FRAMES = new ArrayList<>();
     private static final Pattern FUNCTION_PARENT_NAME = Pattern.compile("function\\s*(\\w+(\\.\\w+)*)[.:]\\w+\\s*"
             + "\\(.*\\)");
     private static final Pattern FUNCTION_NAME = Pattern.compile("_G\\.(\\w+)\\s*=\\s*(\\w+)$");
@@ -25,6 +33,15 @@ public class ParseFilesPane extends BaseApiPane {
     private Button btSelect;
     private double total;
     private long current;
+
+    static {
+        FRAMES.addAll(Arrays.asList("Frame", "ContainedAlertFrame", "DropDownToggleButton", "ScrollBarButton"));
+        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Frame")));
+        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Model")));
+        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("PlayerModel")));
+        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Button")));
+        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("POIFrame")));
+    }
 
     public ParseFilesPane(String name, EnumVersionType versionType) {
         super(name, versionType);
@@ -87,9 +104,27 @@ public class ParseFilesPane extends BaseApiPane {
                                     sb.append("function ").append(matcher.group(1)).append("(...) end\n\n");
                                 }
                             }
-                            current += getFileSize(inPath);
-                            updateProgress(current / total);
+                        } else if (filename.endsWith("xml")) {
+                            Document document = Jsoup.parse(inputStream, "UTF-8", "", Parser.xmlParser());
+                            // 添加有 parentKey 属性子元素的 virtual frame 和 intrinsic frame
+                            Elements elements = document.select("[intrinsic=true]:has([parentKey]:not([virtual=true])),"
+                                    + "[name]:not([name^=$parent])[virtual=true]:has([parentKey]:not([virtual=true]))");
+                            for (Element element : elements) {
+                                if (Thread.currentThread().isInterrupted()) {
+                                    return;
+                                }
+                                String tagName = element.tagName();
+                                if (FRAMES.contains(tagName) && hasChildParentKey(element)) {
+                                    String name = element.attr("name");
+                                    sb.append("---@class ").append(name).append(":").append(tagName).append("\n")
+                                            .append(name).append(" = {\n");
+                                    appendParentKeys(sb, element, 1, name, name);
+                                    sb.append("}\n\n");
+                                }
+                            }
                         }
+                        current += getFileSize(inPath);
+                        updateProgress(current / total);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -98,15 +133,91 @@ public class ParseFilesPane extends BaseApiPane {
         }
     }
 
+    public boolean hasChildParentKey(Element element) {
+        Elements elements = element.children().select("[parentKey]");
+        for (Element el : elements) {
+            if (isChildParentKey(el, element.attr("name"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isChildParentKey(Element element, String templateName) {
+        for (int i = 0; i < element.parents().size(); i++) {
+            Element parent = element.parents().get(i);
+            String name = parent.attr("name");
+            String parentKey = parent.attr("parentKey");
+            if (!"".equals(parentKey)) {
+                return true;
+            }
+            if (!"".equals(name) && !templateName.equals(name)) {
+                return false;
+            }
+            if (templateName.equals(name)) {
+                return true;
+            }
+        }
+        return true;
+    }
+
+    public void appendParentKeys(StringBuilder sb, Element element, int numBlank, String prefix, String templateName) {
+        Elements elements = element.select(">[parentKey]:not([virtual=true])");
+        for (Element el : elements) {
+            if (isChildParentKey(el, templateName)) {
+                for (int i = 0; i < numBlank; i++) {
+                    sb.append("    ");
+                }
+
+                String name = el.attr("parentKey");
+                String className = prefix;
+                if (hasChildParentKey(el)) {
+                    className += "_" + name;
+                    sb.append("---@class ").append(className).append(":");
+                } else {
+                    sb.append("---@type ");
+                }
+                sb.append(processTagName(el.tagName())).append("\n");
+
+                for (int i = 0; i < numBlank; i++) {
+                    sb.append("    ");
+                }
+
+                if (name.contains("-")) {
+                    name = "[\"" + name + "\"]";
+                }
+                sb.append(name).append(" = {\n");
+                appendParentKeys(sb, el, numBlank + 1, className, templateName);
+
+                for (int i = 0; i < numBlank; i++) {
+                    sb.append("    ");
+                }
+                sb.append("},\n");
+            }
+        }
+        for (Element el : element.children()) {
+            appendParentKeys(sb, el, numBlank, prefix, templateName);
+        }
+    }
+
+    public String processTagName(String tagName) {
+        if (tagName.endsWith("Texture") && !"MaskTexture".equals(tagName)) {
+            tagName = "Texture";
+        } else if ("ButtonText".equals(tagName)) {
+            tagName = "FontString";
+        }
+        return tagName;
+    }
+
     public long getFileSize(File filepath) {
-        if (filepath.isFile() && filepath.getName().endsWith(".lua")) {
+        if (filepath.isFile()) {
             return filepath.length();
         } else if (filepath.isDirectory()) {
             long total = 0;
             File[] files = filepath.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (file.isFile() && file.getName().endsWith(".lua")) {
+                    if (file.isFile()) {
                         total += file.length();
                     } else if (file.isDirectory()) {
                         total += getFileSize(file);
