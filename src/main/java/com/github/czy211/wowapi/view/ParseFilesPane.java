@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 public class ParseFilesPane extends BaseApiPane {
     private static final ArrayList<String> FRAMES = new ArrayList<>();
-    private static final Pattern FUNCTION_PARENT_NAME = Pattern.compile("function\\s*(\\w+(\\.\\w+)*)[.:]\\w+\\s*"
+    private static final Pattern FUNCTION_PARENT_NAME = Pattern.compile("function\\s+(\\w+(\\.\\w+)*)[.:]\\w+\\s*"
             + "\\(.*\\)");
     private static final Pattern FUNCTION_NAME = Pattern.compile("_G\\.(\\w+)\\s*=\\s*(\\w+)$");
     private Label lbBicName;
