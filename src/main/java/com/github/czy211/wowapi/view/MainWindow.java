@@ -48,19 +48,18 @@ public class MainWindow extends Application {
         WidgetHierarchyPane widgetHierarchyPane = new WidgetHierarchyPane("Widget_Hierarchy.png", EnumVersionType.NONE);
         WowApiPane wowApiPane = new WowApiPane("WoW_API.lua", EnumVersionType.TIMESTAMP);
         WidgetApiPane widgetApiPane = new WidgetApiPane("Widget_API.lua", EnumVersionType.TIMESTAMP);
-        WidgetScriptHandlersPane widgetScriptHandlersPane = new WidgetScriptHandlersPane("Widget_Script_Handlers.txt",
-                EnumVersionType.TIMESTAMP);
+        WidgetScriptsPane widgetScriptsPane = new WidgetScriptsPane("Widget_Scripts.txt", EnumVersionType.TIMESTAMP);
         LuaApiPane luaApiPane = new LuaApiPane("Lua_API.lua", EnumVersionType.TIMESTAMP);
         GlobalStringsPane globalStringsPane = new GlobalStringsPane("Global_Strings.txt", EnumVersionType.BUILD);
         ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_ID.lua", EnumVersionType.BUILD);
         AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.lua", EnumVersionType.BUILD);
         NumericConstantsPane numericConstantsPane = new NumericConstantsPane("Numeric_Constants.lua",
                 EnumVersionType.BUILD);
-        ParseFilesPane parseFilesPane = new ParseFilesPane("Parsed_File.lua", EnumVersionType.NONE);
+        TemplatesPane templatesPane = new TemplatesPane("Templates.lua", EnumVersionType.NONE);
 
         mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane, widgetApiPane,
-                widgetScriptHandlersPane, luaApiPane, globalStringsPane, artTextureIdPane, atlasInfoPane, numericConstantsPane,
-                parseFilesPane);
+                widgetScriptsPane, luaApiPane, globalStringsPane, artTextureIdPane, atlasInfoPane, numericConstantsPane,
+                templatesPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {
             Node node = mainPane.getChildren().get(i);
@@ -76,11 +75,11 @@ public class MainWindow extends Application {
                 refreshPane(mainPane);
             }
         });
-        parseFilesPane.getBtSelect().setOnAction(event -> {
+        templatesPane.getBtSelect().setOnAction(event -> {
             File filepath = chooser.showDialog(primaryStage);
-            btSelectOnClick(filepath, parseFilesPane.getTfBicPath(), PropConst.BIC_PATH);
+            btSelectOnClick(filepath, templatesPane.getTfBicPath(), PropConst.BIC_PATH);
             if (filepath != null) {
-                parseFilesPane.getBtDownload().setDisable(false);
+                templatesPane.getBtDownload().setDisable(false);
             }
         });
 

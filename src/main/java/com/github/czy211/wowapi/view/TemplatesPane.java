@@ -23,11 +23,11 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParseFilesPane extends BaseApiPane {
+public class TemplatesPane extends BaseApiPane {
     private static final ArrayList<String> FRAMES = new ArrayList<>();
-    private static final Pattern FUNCTION_PARENT_NAME = Pattern.compile("function\\s+(\\w+(\\.\\w+)*)[.:]\\w+\\s*"
-            + "\\(.*\\)");
-    private static final Pattern FUNCTION_NAME = Pattern.compile("_G\\.(\\w+)\\s*=\\s*(\\w+)$");
+    private static final Pattern FUNCTION_DEFINITION_PATTERN1 = Pattern.compile("function\\s+(\\w+(\\.\\w+)*)[.:]\\w+"
+            + "\\s*\\(.*\\)");
+    private static final Pattern FUNCTION_DEFINITION_PATTERN2 = Pattern.compile("_G\\.(\\w+)\\s*=\\s*(\\w+)$");
     private Label lbBicName;
     private TextField tfBicPath;
     private Button btSelect;
@@ -43,7 +43,7 @@ public class ParseFilesPane extends BaseApiPane {
         FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("POIFrame")));
     }
 
-    public ParseFilesPane(String name, EnumVersionType versionType) {
+    public TemplatesPane(String name, EnumVersionType versionType) {
         super(name, versionType);
         current = 0;
         lbBicName = new Label("BlizzardInterfaceCode");
@@ -66,12 +66,12 @@ public class ParseFilesPane extends BaseApiPane {
         }
     }
 
-    public void parseFile(File path, StringBuilder sb, HashSet<String> set) {
+    public void appendTemplates(File path, StringBuilder sb, HashSet<String> set) {
         File[] filePaths = path.listFiles();
         if (filePaths != null) {
             for (File inPath : filePaths) {
                 if (inPath.isDirectory()) {
-                    parseFile(inPath, sb, set);
+                    appendTemplates(inPath, sb, set);
                 } else {
                     String filename = inPath.getName();
                     try {
@@ -86,7 +86,7 @@ public class ParseFilesPane extends BaseApiPane {
                                 }
                                 line = line.trim();
                                 String name = "";
-                                Matcher matcher = FUNCTION_PARENT_NAME.matcher(line);
+                                Matcher matcher = FUNCTION_DEFINITION_PATTERN1.matcher(line);
                                 if (matcher.find()) {
                                     name = matcher.group(1);
                                 }
@@ -98,7 +98,7 @@ public class ParseFilesPane extends BaseApiPane {
                                 if ("TickerPrototype".equals(name)) {
                                     sb.append(line).append(" end\n\n");
                                 }
-                                matcher = FUNCTION_NAME.matcher(line);
+                                matcher = FUNCTION_DEFINITION_PATTERN2.matcher(line);
                                 if (matcher.find() && matcher.group(1).equals(matcher.group(2))) {
                                     // 添加 Blizzard_CombatLog.lua 中使用 _G.xxx = xxx 方式定义的全局函数
                                     sb.append("function ").append(matcher.group(1)).append("(...) end\n\n");
@@ -236,7 +236,7 @@ public class ParseFilesPane extends BaseApiPane {
         HashSet<String> set = new HashSet<>();
         total = getFileSize(inPath);
         connectSuccess();
-        parseFile(inPath, sb, set);
+        appendTemplates(inPath, sb, set);
         if (sb.length() > 0) {
             try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
                 writer.print(sb);

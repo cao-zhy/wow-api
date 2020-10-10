@@ -11,10 +11,10 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class WidgetScriptHandlersPane extends BaseApiPane {
+public class WidgetScriptsPane extends BaseApiPane {
     private static final String API_URL = LinkConst.WIKI_BASE + "/Widget_script_handlers";
 
-    public WidgetScriptHandlersPane(String name, EnumVersionType versionType) {
+    public WidgetScriptsPane(String name, EnumVersionType versionType) {
         super(name, versionType);
     }
 
