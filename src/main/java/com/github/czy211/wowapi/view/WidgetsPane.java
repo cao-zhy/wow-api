@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 
 public class WidgetsPane extends BaseApiPane {
     private static final ArrayList<String> FRAMES = new ArrayList<>();
-    private static final Pattern FUNCTION_DEFINITION_PATTERN1 = Pattern.compile("function\\s+(\\w+(\\.\\w+)*)[.:]\\w+"
-            + "\\s*\\(.*\\)");
-    private static final Pattern FUNCTION_DEFINITION_PATTERN2 = Pattern.compile("_G\\.(\\w+)\\s*=\\s*(\\w+)$");
+    private static final Pattern FUNCTION_DEFINITION_PATTERN1 = Pattern.compile("function[ \t]+(\\w+):\\w+[ \t]*\\(.*"
+            + "\\)");
+    private static final Pattern FUNCTION_DEFINITION_PATTERN2 = Pattern.compile("_G\\.(\\w+)[ \t]*=[ \t]*(\\w+)$");
     private static final String CHILD_NAME_PREFIX = "$parent";
     private static final Map<String, Template> TEMPLATE_MAP = new HashMap<>();
     private Label lbBicName;
@@ -85,7 +85,6 @@ public class WidgetsPane extends BaseApiPane {
                                 if (Thread.currentThread().isInterrupted()) {
                                     return;
                                 }
-                                line = line.trim();
                                 String name = "";
                                 Matcher matcher = FUNCTION_DEFINITION_PATTERN1.matcher(line);
                                 if (matcher.find()) {
