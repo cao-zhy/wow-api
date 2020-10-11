@@ -379,6 +379,7 @@ public class WidgetsPane extends BaseApiPane {
         StringBuilder templateSb = new StringBuilder();
         HashSet<String> set = new HashSet<>();
         total = getFileSize(inPath) * 2;
+        current = 0;
         connectSuccess();
         appendTemplates(inPath, templateSb, set);
         if (templateSb.length() > 0) {
