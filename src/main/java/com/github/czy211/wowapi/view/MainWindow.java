@@ -47,9 +47,9 @@ public class MainWindow extends Application {
         DownloadPathPane downloadPathPane = new DownloadPathPane();
         WidgetHierarchyPane widgetHierarchyPane = new WidgetHierarchyPane("Widget_Hierarchy.png", EnumVersionType.NONE);
         WowApiPane wowApiPane = new WowApiPane("WoW_API.lua", EnumVersionType.TIMESTAMP);
+        LuaApiPane luaApiPane = new LuaApiPane("Lua_API.lua", EnumVersionType.TIMESTAMP);
         WidgetApiPane widgetApiPane = new WidgetApiPane("Widget_API.lua", EnumVersionType.TIMESTAMP);
         WidgetScriptsPane widgetScriptsPane = new WidgetScriptsPane("Widget_Scripts.txt", EnumVersionType.TIMESTAMP);
-        LuaApiPane luaApiPane = new LuaApiPane("Lua_API.lua", EnumVersionType.TIMESTAMP);
         GlobalStringsPane globalStringsPane = new GlobalStringsPane("Global_Strings.txt", EnumVersionType.BUILD);
         ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_ID.lua", EnumVersionType.BUILD);
         AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.lua", EnumVersionType.BUILD);
@@ -57,8 +57,8 @@ public class MainWindow extends Application {
                 EnumVersionType.BUILD);
         TemplatesPane templatesPane = new TemplatesPane("Templates.lua", EnumVersionType.NONE);
 
-        mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane, widgetApiPane,
-                widgetScriptsPane, luaApiPane, globalStringsPane, artTextureIdPane, atlasInfoPane, numericConstantsPane,
+        mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane, luaApiPane, widgetApiPane,
+                widgetScriptsPane, globalStringsPane, artTextureIdPane, atlasInfoPane, numericConstantsPane,
                 templatesPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {
