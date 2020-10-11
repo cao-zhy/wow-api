@@ -1,6 +1,7 @@
 package com.github.czy211.wowapi.view;
 
 import com.github.czy211.wowapi.constant.EnumVersionType;
+import com.github.czy211.wowapi.model.Template;
 import com.github.czy211.wowapi.util.Utils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,17 +18,17 @@ import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TemplatesPane extends BaseApiPane {
+public class WidgetsPane extends BaseApiPane {
     private static final ArrayList<String> FRAMES = new ArrayList<>();
     private static final Pattern FUNCTION_DEFINITION_PATTERN1 = Pattern.compile("function\\s+(\\w+(\\.\\w+)*)[.:]\\w+"
             + "\\s*\\(.*\\)");
     private static final Pattern FUNCTION_DEFINITION_PATTERN2 = Pattern.compile("_G\\.(\\w+)\\s*=\\s*(\\w+)$");
+    private static final String CHILD_NAME_PREFIX = "$parent";
+    private static final Map<String, Template> TEMPLATE_MAP = new HashMap<>();
     private Label lbBicName;
     private TextField tfBicPath;
     private Button btSelect;
@@ -43,7 +44,7 @@ public class TemplatesPane extends BaseApiPane {
         FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("POIFrame")));
     }
 
-    public TemplatesPane(String name, EnumVersionType versionType) {
+    public WidgetsPane(String name, EnumVersionType versionType) {
         super(name, versionType);
         current = 0;
         lbBicName = new Label("BlizzardInterfaceCode");
@@ -106,20 +107,39 @@ public class TemplatesPane extends BaseApiPane {
                             }
                         } else if (filename.endsWith("xml")) {
                             Document document = Jsoup.parse(inputStream, "UTF-8", "", Parser.xmlParser());
-                            // 添加有 parentKey 属性子元素的 virtual frame 和 intrinsic frame
-                            Elements elements = document.select("[intrinsic=true]:has([parentKey]:not([virtual=true])),"
-                                    + "[name]:not([name^=$parent])[virtual=true]:has([parentKey]:not([virtual=true]))");
+                            Elements elements = document.select("[intrinsic=true],[name]:not([name^=$parent])"
+                                    + "[virtual=true]");
                             for (Element element : elements) {
                                 if (Thread.currentThread().isInterrupted()) {
                                     return;
                                 }
                                 String tagName = element.tagName();
-                                if (FRAMES.contains(tagName) && hasChildParentKey(element)) {
+                                if (FRAMES.contains(tagName)) {
                                     String name = element.attr("name");
-                                    sb.append("---@class ").append(name).append(":").append(tagName).append("\n")
-                                            .append(name).append(" = {\n");
-                                    appendParentKeys(sb, element, 1, name, name);
-                                    sb.append("}\n\n");
+                                    Template template = new Template(name);
+                                    String inherits = element.attr("inherits");
+                                    if (!"".equals(inherits)) {
+                                        template.getInterfaces().addAll(Arrays.asList(inherits.split(", |,")));
+                                    }
+                                    String mixins = element.attr("mixin") + element.attr("secureMixin");
+                                    if (!"".equals(mixins)) {
+                                        template.getInterfaces().addAll(Arrays.asList(mixins.split(", |,")));
+                                    }
+                                    Elements els = element.select("[name^=$parent]:not([virtual=true],[parentKey])");
+                                    if (els.size() > 0) {
+                                        for (Element el : els) {
+                                            String widgetName = processName(el);
+                                            template.getWidgets().put(widgetName, el);
+                                        }
+                                    }
+                                    TEMPLATE_MAP.put(name, template);
+                                    // 添加有 parentKey 属性子元素的 virtual frame 和 intrinsic frame
+                                    if (hasChildParentKey(element)) {
+                                        sb.append("---@class ").append(name).append(":").append(tagName).append("\n")
+                                                .append(name).append(" = {\n");
+                                        appendParentKeys(sb, element, 1, name, name);
+                                        sb.append("}\n\n");
+                                    }
                                 }
                             }
                         }
@@ -129,6 +149,109 @@ public class TemplatesPane extends BaseApiPane {
                         e.printStackTrace();
                     }
                 }
+            }
+        }
+    }
+
+    public void appendWidgets(File path, StringBuilder sb) {
+        File[] filePaths = path.listFiles();
+        if (filePaths != null) {
+            for (File inPath : filePaths) {
+                if (inPath.isDirectory()) {
+                    appendWidgets(inPath, sb);
+                } else {
+                    String filename = inPath.getName();
+                    try {
+                        InputStream inputStream = new FileInputStream(inPath);
+                        if (filename.endsWith(".xml")) {
+                            Document document = Jsoup.parse(inputStream, "UTF-8", "", Parser.xmlParser());
+                            Elements elements = document.select("Ui>[name]:not([virtual=true],[intrinsic=true])");
+                            for (Element element : elements) {
+                                if (Thread.currentThread().isInterrupted()) {
+                                    return;
+                                }
+                                String tagName = element.tagName();
+                                if (FRAMES.contains(tagName)) {
+                                    appendWidget(sb, element);
+                                    for (Element el : element.children().select("[name]:not([virtual=true],"
+                                            + "[parentKey])")) {
+                                        if (FRAMES.contains(processTagName(el.tagName()))) {
+                                            appendWidget(sb, el);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        current += getFileSize(inPath);
+                        updateProgress(current / total);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    public void appendWidget(StringBuilder sb, Element element) {
+        String name = processName(element);
+        if (hasChildParentKey(element)) {
+            String tagName = processTagName(element.tagName());
+            sb.append("---@class ").append(name).append(":").append(tagName).append("\n").append(name).append(" = {\n");
+            appendParentKeys(sb, element, 1, name, element.attr("name"));
+            sb.append("}\n\n");
+        }
+        appendTypes(sb, element);
+
+        // 添加 interfaces 中的子 widget
+        appendChildWidget(sb, name, Arrays.asList(element.attr("inherits").split(", |,")));
+    }
+
+    public void appendChildWidget(StringBuilder sb, String name, List<String> inherits) {
+        for (String inherit : inherits) {
+            Template template = TEMPLATE_MAP.get(inherit);
+            if (template != null) {
+                for (Map.Entry<String, Element> entry : template.getWidgets().entrySet()) {
+                    String newName = entry.getKey().replace(CHILD_NAME_PREFIX, name);
+                    Element el = entry.getValue().attr("name", newName);
+                    appendWidget(sb, el);
+                }
+                appendChildWidget(sb, name, template.getInterfaces());
+            }
+        }
+    }
+
+    public void appendTypes(StringBuilder sb, Element element) {
+        String name = processName(element);
+        String tagName = element.tagName();
+        sb.append("---@type ").append(processTagName(tagName));
+        if ("ScrollingMessageFrame".equals(tagName)) {
+            sb.append("|FontStance");
+        }
+        Template template = TEMPLATE_MAP.get(tagName);
+        if (template != null) {
+            appendInterfaces(sb, template.getInterfaces());
+        }
+        if (FRAMES.contains(tagName)) {
+            String inherits = element.attr("inherits");
+            if (!"".equals(inherits)) {
+                appendInterfaces(sb, Arrays.asList(inherits.split(", |,")));
+            }
+        }
+        String mixins = element.attr("mixin") + element.attr("secureMixin");
+        if (!"".equals(mixins)) {
+            for (String mixin : mixins.split(", |,")) {
+                sb.append("|").append(mixin);
+            }
+        }
+        sb.append("\n").append(name).append(" = {}\n\n");
+    }
+
+    public void appendInterfaces(StringBuilder sb, List<String> inherits) {
+        for (String inherit : inherits) {
+            sb.append("|").append(inherit);
+            Template template = TEMPLATE_MAP.get(inherit);
+            if (template != null) {
+                appendInterfaces(sb, template.getInterfaces());
             }
         }
     }
@@ -200,6 +323,27 @@ public class TemplatesPane extends BaseApiPane {
         }
     }
 
+    public String processName(Element element) {
+        String name = element.attr("name");
+        int index = -1;
+        while (name.startsWith(CHILD_NAME_PREFIX)) {
+            for (int i = index + 1; i < element.parents().size(); i++) {
+                Element parent = element.parents().get(i);
+                if ("true".equals(parent.attr("virtual"))) {
+                    return name;
+                }
+                String parentName = parent.attr("name");
+                if (!"".equals(parentName)) {
+                    // 使用父元素的名称替换“$parent”
+                    name = name.replace(CHILD_NAME_PREFIX, parentName);
+                    index = i;
+                    break;
+                }
+            }
+        }
+        return name;
+    }
+
     public String processTagName(String tagName) {
         if (tagName.endsWith("Texture") && !"MaskTexture".equals(tagName)) {
             tagName = "Texture";
@@ -232,16 +376,24 @@ public class TemplatesPane extends BaseApiPane {
     @Override
     public void download() throws IOException {
         File inPath = new File(Utils.getBicPath());
-        StringBuilder sb = new StringBuilder();
+        StringBuilder templateSb = new StringBuilder();
         HashSet<String> set = new HashSet<>();
-        total = getFileSize(inPath);
+        total = getFileSize(inPath) * 2;
         connectSuccess();
-        appendTemplates(inPath, sb, set);
-        if (sb.length() > 0) {
-            try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
-                writer.print(sb);
+        appendTemplates(inPath, templateSb, set);
+        if (templateSb.length() > 0) {
+            try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + "Templates.lua", "UTF-8")) {
+                writer.print(templateSb);
             }
         }
+        StringBuilder widgetSb = new StringBuilder();
+        appendWidgets(inPath, widgetSb);
+        if (widgetSb.length() > 0) {
+            try (PrintWriter writer = new PrintWriter(Utils.getDownloadPath() + getName(), "UTF-8")) {
+                writer.print(widgetSb);
+            }
+        }
+
     }
 
     @Override

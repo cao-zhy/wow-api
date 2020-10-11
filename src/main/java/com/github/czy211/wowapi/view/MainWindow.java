@@ -55,11 +55,11 @@ public class MainWindow extends Application {
         AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.lua", EnumVersionType.BUILD);
         NumericConstantsPane numericConstantsPane = new NumericConstantsPane("Numeric_Constants.lua",
                 EnumVersionType.BUILD);
-        TemplatesPane templatesPane = new TemplatesPane("Templates.lua", EnumVersionType.NONE);
+        WidgetsPane widgetsPane = new WidgetsPane("Widgets.lua", EnumVersionType.NONE);
 
         mainPane.getChildren().addAll(downloadPathPane, widgetHierarchyPane, wowApiPane, luaApiPane, widgetApiPane,
                 widgetScriptsPane, globalStringsPane, artTextureIdPane, atlasInfoPane, numericConstantsPane,
-                templatesPane);
+                widgetsPane);
 
         for (int i = 0; i < mainPane.getChildren().size(); i++) {
             Node node = mainPane.getChildren().get(i);
@@ -75,11 +75,11 @@ public class MainWindow extends Application {
                 refreshPane(mainPane);
             }
         });
-        templatesPane.getBtSelect().setOnAction(event -> {
+        widgetsPane.getBtSelect().setOnAction(event -> {
             File filepath = chooser.showDialog(primaryStage);
-            btSelectOnClick(filepath, templatesPane.getTfBicPath(), PropConst.BIC_PATH);
+            btSelectOnClick(filepath, widgetsPane.getTfBicPath(), PropConst.BIC_PATH);
             if (filepath != null) {
-                templatesPane.getBtDownload().setDisable(false);
+                widgetsPane.getBtDownload().setDisable(false);
             }
         });
 
