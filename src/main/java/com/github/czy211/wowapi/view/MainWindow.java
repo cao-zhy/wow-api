@@ -51,8 +51,8 @@ public class MainWindow extends Application {
         WidgetApiPane widgetApiPane = new WidgetApiPane("Widget_API.lua", EnumVersionType.TIMESTAMP);
         WidgetScriptsPane widgetScriptsPane = new WidgetScriptsPane("Widget_Scripts.txt", EnumVersionType.TIMESTAMP);
         GlobalStringsPane globalStringsPane = new GlobalStringsPane("Global_Strings.txt", EnumVersionType.BUILD);
-        ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_ID.lua", EnumVersionType.BUILD);
-        AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.lua", EnumVersionType.BUILD);
+        ArtTextureIdPane artTextureIdPane = new ArtTextureIdPane("Art_Texture_ID.txt", EnumVersionType.BUILD);
+        AtlasInfoPane atlasInfoPane = new AtlasInfoPane("Atlas_Info.txt", EnumVersionType.BUILD);
         NumericConstantsPane numericConstantsPane = new NumericConstantsPane("Numeric_Constants.lua",
                 EnumVersionType.BUILD);
         WidgetsPane widgetsPane = new WidgetsPane("Widgets.lua", EnumVersionType.NONE);
