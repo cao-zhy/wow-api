@@ -23,7 +23,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WidgetsPane extends BaseApiPane {
-    private static final ArrayList<String> FRAMES = new ArrayList<>();
+    private static final ArrayList<String> TEMPLATE_TAGS = new ArrayList<>();
+    private static final ArrayList<String> WIDGET_TAGS = new ArrayList<>();
     private static final Pattern FUNCTION_DEFINITION_PATTERN1 = Pattern.compile("function[ \t]+(\\w+):\\w+[ \t]*\\(.*"
             + "\\)");
     private static final Pattern FUNCTION_DEFINITION_PATTERN2 = Pattern.compile("_G\\.(\\w+)[ \t]*=[ \t]*(\\w+)$");
@@ -36,12 +37,17 @@ public class WidgetsPane extends BaseApiPane {
     private long current;
 
     static {
-        FRAMES.addAll(Arrays.asList("Frame", "ContainedAlertFrame", "DropDownToggleButton", "ScrollBarButton"));
-        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Frame")));
-        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Model")));
-        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("PlayerModel")));
-        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Button")));
-        FRAMES.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("POIFrame")));
+        TEMPLATE_TAGS.addAll(Arrays.asList("Frame", "ContainedAlertFrame", "DropDownToggleButton", "ScrollBarButton"));
+        TEMPLATE_TAGS.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Frame")));
+        TEMPLATE_TAGS.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Model")));
+        TEMPLATE_TAGS.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("PlayerModel")));
+        TEMPLATE_TAGS.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Button")));
+        TEMPLATE_TAGS.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("POIFrame")));
+
+        WIDGET_TAGS.addAll(TEMPLATE_TAGS);
+        WIDGET_TAGS.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("UIObject")));
+        WIDGET_TAGS.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("LayeredRegion")));
+        WIDGET_TAGS.addAll(Arrays.asList(WidgetHierarchyPane.WIDGETS.get("Animation")));
     }
 
     public WidgetsPane(String name, EnumVersionType versionType) {
@@ -106,14 +112,13 @@ public class WidgetsPane extends BaseApiPane {
                             }
                         } else if (filename.endsWith("xml")) {
                             Document document = Jsoup.parse(inputStream, "UTF-8", "", Parser.xmlParser());
-                            Elements elements = document.select("[intrinsic=true],[name]:not([name^=$parent])"
-                                    + "[virtual=true]");
+                            Elements elements = document.select("[intrinsic=true],[name]:not([name^=$])[virtual=true]");
                             for (Element element : elements) {
                                 if (Thread.currentThread().isInterrupted()) {
                                     return;
                                 }
                                 String tagName = element.tagName();
-                                if (FRAMES.contains(tagName)) {
+                                if (TEMPLATE_TAGS.contains(tagName)) {
                                     String name = element.attr("name");
                                     Template template = new Template(name);
                                     String inherits = element.attr("inherits");
@@ -124,7 +129,7 @@ public class WidgetsPane extends BaseApiPane {
                                     if (!"".equals(mixins)) {
                                         template.getInterfaces().addAll(Arrays.asList(mixins.split(", |,")));
                                     }
-                                    Elements els = element.select("[name^=$parent]:not([virtual=true],[parentKey])");
+                                    Elements els = element.select("[name^=$parent]:not([parentKey])");
                                     if (els.size() > 0) {
                                         for (Element el : els) {
                                             String widgetName = processName(el);
@@ -164,17 +169,16 @@ public class WidgetsPane extends BaseApiPane {
                         InputStream inputStream = new FileInputStream(inPath);
                         if (filename.endsWith(".xml")) {
                             Document document = Jsoup.parse(inputStream, "UTF-8", "", Parser.xmlParser());
-                            Elements elements = document.select("Ui>[name]:not([virtual=true],[intrinsic=true])");
+                            Elements elements = document.select("[name]:not([name^=$],[virtual=true],[intrinsic=true],"
+                                    + "[parentKey])");
                             for (Element element : elements) {
                                 if (Thread.currentThread().isInterrupted()) {
                                     return;
                                 }
-                                String tagName = element.tagName();
-                                if (FRAMES.contains(tagName)) {
+                                if (WIDGET_TAGS.contains(processTagName(element.tagName()))) {
                                     appendWidget(sb, element);
-                                    for (Element el : element.children().select("[name]:not([virtual=true],"
-                                            + "[parentKey])")) {
-                                        if (FRAMES.contains(processTagName(el.tagName()))) {
+                                    for (Element el : element.children().select("[name^=$parent]:not([parentKey])")) {
+                                        if (WIDGET_TAGS.contains(processTagName(el.tagName()))) {
                                             appendWidget(sb, el);
                                         }
                                     }
@@ -230,7 +234,7 @@ public class WidgetsPane extends BaseApiPane {
         if (template != null) {
             appendInterfaces(sb, template.getInterfaces());
         }
-        if (FRAMES.contains(tagName)) {
+        if (TEMPLATE_TAGS.contains(tagName)) {
             String inherits = element.attr("inherits");
             if (!"".equals(inherits)) {
                 appendInterfaces(sb, Arrays.asList(inherits.split(", |,")));
