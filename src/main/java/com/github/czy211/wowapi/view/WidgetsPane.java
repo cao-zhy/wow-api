@@ -206,10 +206,10 @@ public class WidgetsPane extends BaseApiPane {
         appendTypes(sb, element);
 
         // 添加 interfaces 中的子 widget
-        appendChildWidget(sb, name, Arrays.asList(element.attr("inherits").split(", |,")));
+        appendInterfacesChildWidget(sb, name, Arrays.asList(element.attr("inherits").split(", |,")));
     }
 
-    public void appendChildWidget(StringBuilder sb, String name, List<String> inherits) {
+    public void appendInterfacesChildWidget(StringBuilder sb, String name, List<String> inherits) {
         for (String inherit : inherits) {
             Template template = TEMPLATE_MAP.get(inherit);
             if (template != null) {
@@ -218,7 +218,7 @@ public class WidgetsPane extends BaseApiPane {
                     Element el = entry.getValue().attr("name", newName);
                     appendWidget(sb, el);
                 }
-                appendChildWidget(sb, name, template.getInterfaces());
+                appendInterfacesChildWidget(sb, name, template.getInterfaces());
             }
         }
     }
