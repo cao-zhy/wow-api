@@ -204,6 +204,7 @@ public class WidgetsPane extends BaseApiPane {
             sb.append("}\n\n");
         }
         appendTypes(sb, element);
+        sb.append(name).append(" = {}\n\n");
 
         // 添加 interfaces 中的子 widget
         appendInterfacesChildWidget(sb, name, Arrays.asList(element.attr("inherits").split(", |,")));
@@ -224,7 +225,6 @@ public class WidgetsPane extends BaseApiPane {
     }
 
     public void appendTypes(StringBuilder sb, Element element) {
-        String name = processName(element);
         String tagName = element.tagName();
         sb.append("---@type ").append(processTagName(tagName));
         if ("ScrollingMessageFrame".equals(tagName)) {
@@ -246,7 +246,7 @@ public class WidgetsPane extends BaseApiPane {
                 sb.append("|").append(mixin);
             }
         }
-        sb.append("\n").append(name).append(" = {}\n\n");
+        sb.append("\n");
     }
 
     public void appendInterfaces(StringBuilder sb, List<String> inherits) {
@@ -295,15 +295,16 @@ public class WidgetsPane extends BaseApiPane {
                     sb.append("    ");
                 }
 
+                boolean hasChildParentKey = hasChildParentKey(el);
                 String name = el.attr("parentKey");
                 String className = prefix;
-                if (hasChildParentKey(el)) {
+                if (hasChildParentKey) {
                     className += "_" + name;
-                    sb.append("---@class ").append(className).append(":");
+                    sb.append("---@class ").append(className).append(":").append(processTagName(el.tagName()))
+                            .append("\n");
                 } else {
-                    sb.append("---@type ");
+                    appendTypes(sb, el);
                 }
-                sb.append(processTagName(el.tagName())).append("\n");
 
                 for (int i = 0; i < numBlank; i++) {
                     sb.append("    ");
@@ -319,6 +320,17 @@ public class WidgetsPane extends BaseApiPane {
                     sb.append("    ");
                 }
                 sb.append("},\n");
+
+                if (hasChildParentKey) {
+                    for (int i = 0; i < numBlank; i++) {
+                        sb.append("    ");
+                    }
+                    appendTypes(sb, el);
+                    for (int i = 0; i < numBlank; i++) {
+                        sb.append("    ");
+                    }
+                    sb.append(name).append(" = {},\n");
+                }
             }
         }
         for (Element el : element.children()) {
