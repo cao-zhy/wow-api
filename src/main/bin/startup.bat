@@ -5,7 +5,7 @@ if "%JAVA_HOME%" == "" (
     pause
 ) else (
     cd %~dp0
-    "%JAVA_HOME%\bin\java" -Dfile.encoding=utf-8 -jar ..\lib\wow-api-3.1.3.jar
+    "%JAVA_HOME%\bin\java" -Dfile.encoding=utf-8 -jar ..\lib\wow-api-3.2.0.jar
 
     if errorlevel 1 (
         pause
