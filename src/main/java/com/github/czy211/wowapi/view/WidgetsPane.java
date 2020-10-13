@@ -334,7 +334,9 @@ public class WidgetsPane extends BaseApiPane {
             }
         }
         for (Element el : element.children()) {
-            appendParentKeys(sb, el, numBlank, prefix, templateName);
+            if (!elements.contains(el)) {
+                appendParentKeys(sb, el, numBlank, prefix, templateName);
+            }
         }
     }
 
