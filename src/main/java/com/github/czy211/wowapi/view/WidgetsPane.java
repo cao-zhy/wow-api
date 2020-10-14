@@ -199,7 +199,10 @@ public class WidgetsPane extends BaseApiPane {
         String name = processName(element);
         if (hasChildParentKey(element)) {
             String tagName = processTagName(element.tagName());
-            sb.append("---@class ").append(name).append(":").append(tagName).append("\n").append(name).append(" = {\n");
+            if (!name.equals(tagName)) {
+                sb.append("---class ").append(name).append(":").append(tagName).append("\n");
+            }
+            sb.append(name).append(" = {\n");
             appendParentKeys(sb, element, 1, name, element.attr("name"));
             sb.append("}\n\n");
         }
