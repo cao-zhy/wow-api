@@ -78,6 +78,10 @@ public class WidgetsPane extends BaseApiPane {
         if (filePaths != null) {
             for (File inPath : filePaths) {
                 if (inPath.isDirectory()) {
+                    String filename = inPath.getName();
+                    if ("GlueXML".equals(filename) || "LCDXML".equals(filename)) {
+                        continue;
+                    }
                     appendTemplates(inPath, sb, set);
                 } else {
                     String filename = inPath.getName();
@@ -162,6 +166,10 @@ public class WidgetsPane extends BaseApiPane {
         if (filePaths != null) {
             for (File inPath : filePaths) {
                 if (inPath.isDirectory()) {
+                    String filename = inPath.getName();
+                    if ("GlueXML".equals(filename) || "LCDXML".equals(filename)) {
+                        continue;
+                    }
                     appendWidgets(inPath, sb);
                 } else {
                     String filename = inPath.getName();
@@ -384,6 +392,10 @@ public class WidgetsPane extends BaseApiPane {
                     if (file.isFile()) {
                         total += file.length();
                     } else if (file.isDirectory()) {
+                        String filename = file.getName();
+                        if ("GlueXML".equals(filename) || "LCDXML".equals(filename)) {
+                            continue;
+                        }
                         total += getFileSize(file);
                     }
                 }
