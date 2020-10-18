@@ -41,7 +41,7 @@
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/UseAnnotation.png)
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/UseAnnotationParam.png)
 
-如果需要给字段赋值，建议使用 @class 注解，因为使用 @type 注解会导致其它使用该类型的地方也会有该字段的提示，容易混淆。  
+如果需要给 Widget 的字段赋值，建议使用 @class 注解，因为使用 @type 或 @param 注解会导致其它使用该类型的地方也会有该字段的提示。  
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/UseAnnotationClass.png)
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/UseAnnotationType.png)
 
@@ -49,8 +49,11 @@
 
 ## 更新日志
 ### v3.2.0
-- 修改 UI 和下载的文件名。
 - 删除枚举值提示。
+- 删除可以通过使用 parentKey 引用的 widget。
+- 删除没有 parentKey 的 template。
+- 修改有 parentKey 的 widget 和 template 的注解为 @class。
+- 修改 UI 和下载的文件名。
 - 添加部分函数的返回类型。
 - 修复部分 bug。
 ### v3.1.3
