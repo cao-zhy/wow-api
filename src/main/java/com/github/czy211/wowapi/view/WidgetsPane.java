@@ -142,7 +142,7 @@ public class WidgetsPane extends BaseApiPane {
                                     }
                                     TEMPLATE_MAP.put(name, template);
                                     // 添加有 parentKey 属性子元素的 virtual frame 和 intrinsic frame
-                                    if (hasChildParentKey(element)) {
+                                    if (hasChildParentKey(element) || "true".equals(element.attr("intrinsic"))) {
                                         sb.append("---@class ").append(name).append(":").append(tagName).append("\n")
                                                 .append(name).append(" = {\n");
                                         appendParentKeys(sb, element, 1, name, name);
