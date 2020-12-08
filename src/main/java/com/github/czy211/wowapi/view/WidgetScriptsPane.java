@@ -25,7 +25,7 @@ public class WidgetScriptsPane extends BaseApiPane {
             sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n");
             Document document = Jsoup.connect(API_URL).get();
             Elements elements = document.select("span.mw-headline:not(#Widget_API,#Widget_hierarchy,#Example,"
-                    + "#References),dd:has(a[title^=UIHANDLER ]:eq(0))");
+                    + "#References),dd:has(a[title^=UIHANDLER ])");
             double total = elements.size();
             int current = 0;
             connectSuccess();

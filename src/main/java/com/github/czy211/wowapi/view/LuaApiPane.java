@@ -24,7 +24,7 @@ public class LuaApiPane extends BaseApiPane {
             StringBuilder sb = new StringBuilder();
             sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\nbit = {}\n\n");
             Document document = Jsoup.connect(API_URL).get();
-            Elements elements = document.select("dd:has(a[title^=API ]:eq(0)):not(:matches(deprecated))");
+            Elements elements = document.select("dd:has(a[title^=API ]):not(:matches(deprecated))");
             double total = elements.size();
             int current = 0;
             connectSuccess();

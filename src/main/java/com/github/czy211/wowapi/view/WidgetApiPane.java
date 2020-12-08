@@ -36,8 +36,7 @@ public class WidgetApiPane extends BaseApiPane {
             sb.append(EnumVersionType.PREFIX).append(getRemoteVersion()).append("\n\n")
                     .append(WidgetHierarchyPane.WIDGET_HIERARCHY);
             Document document = Jsoup.connect(API_URL).get();
-            Elements elements = document.select("dd:not(:matches(^(UI|DEPRECATED|REMOVED) ))"
-                    + ":has(a[title^=API ]:eq(0))");
+            Elements elements = document.select("dd:not(:matches(^REMOVED )):has(a[title^=API ]:eq(0))");
             double total = elements.size();
             int current = 0;
             connectSuccess();
