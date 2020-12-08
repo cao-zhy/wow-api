@@ -13,7 +13,7 @@
 默认下载位置是程序根目录下的 downloads 文件夹，可以点击“选择文件夹”改变下载位置。（建议使用导出暴雪接口代码自动创建的 BlizzardInterfaceCode 文件夹，导出暴雪接口代码见 [其它说明](#其它说明)）
 
 - Widget_Hierarchy.png 文件显示部件层次结构。
-- WoW_API.lua 文件包含了 <https://wow.gamepedia.com/World_of_Warcraft_API> 列出的函数（不包含怀旧服函数、测试服函数、UI 函数、DEPRECATED 函数和 REMOVED 函数）。
+- WoW_API.lua 文件包含了 <https://wow.gamepedia.com/World_of_Warcraft_API> 列出的函数（不包含怀旧服函数、测试服函数、UI 函数和 SECURE 函数）。
 - Lua_API.lua 文件包含了 <https://wow.gamepedia.com/Lua_functions> 列出的函数。
 - Widget_API.lua 文件包含了 <https://wow.gamepedia.com/Widget_API> 列出的函数。
 - Widget_Scripts.txt 文件包含了 <https://wow.gamepedia.com/Widget_script_handlers> 的内容。
@@ -48,6 +48,9 @@
 注解的使用请参考 <https://emmylua.github.io/annotation.html>
 
 ## 更新日志
+### v3.2.1
+- 修复 WoW_API.lua 没有 NOCOMBAT 和 HW 函数的问题。
+- 删除 Widgets.lua 中多余的注解。
 ### v3.2.0
 - 删除枚举值提示。
 - 删除可以通过使用 parentKey 引用的 widget。
