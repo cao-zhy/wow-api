@@ -20,7 +20,7 @@
 - Global_Strings.txt 从 <https://www.townlong-yak.com/framexml/live> 下载 GlobalStrings.lua 文件，可以选择不同的语言版本（如果需要代码补全提示显示这些字符串常量，修改文件后缀名为 lua）。
 - Art_Texture_ID.txt 从 <https://www.townlong-yak.com/framexml/live> 下载 ArtTextureID.lua 文件。
 - Atlas_Info.txt 从 <https://www.townlong-yak.com/framexml/live> 下载 AtlasInfo.lua 文件。
-- Numeric_Constants.lua 文件包含了部分数字常量（使用插件在游戏内导出，见 [其它说明](#其它说明)）。
+- Numeric_Constants.lua 文件包含了部分数字常量（见 release 页面附件）。
 - Widgets.lua 从暴雪接口代码中导出函数的命名空间、框架模板和部件。
 
 ## 其它说明
@@ -32,10 +32,11 @@
 4. 导出暴雪接口代码。在战网的游戏设置里勾选额外命令行参数，并输入 -console。在游戏角色选择界面按下 “\`” 键，在弹出的输入框中输入 exportinterfacefiles code，导出的代码在 %WoW_HOME%\\_retail\_\BlizzardInterfaceCode\Interface 文件夹。  
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/BNetSettings.png)
 5. 使用本程序下载 API 文件。
-6. 在下载位置新建 Numeric_Constants.lua 文件，安装 [WlkUI](https://github.com/czy211/wlk-ui) 插件。在游戏聊天框输入“/nc” 导出数字常量，复制粘贴到 Numeric_Constants.lua 并保存。 
-7. 创建 Lua 项目，在 Project Structure 中添加 SDK，classpath 选择 %WoW_HOME%\\_retail\_\BlizzardInterfaceCode，在 Project SDK 中选择添加的 SDK。   
-![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/AddSDK.png)
-![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/SelectSDK.png)
+6. 下载 release 页面的 Numeric_Constants.lua。
+7. 创建 Lua 项目，在 Project Structure 中添加 SDK，classpath 选择 %WoW_HOME%\\_retail\_\BlizzardInterfaceCode，在 Project SDK 中选择添加的
+   SDK。   
+   ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/AddSDK.png)
+   ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/SelectSDK.png)
 
 如果要代码补全提示显示定义在非 _G 命名空间的函数，需要使用注解声明类型。  
 ![](https://github.com/czy211/picture-library/blob/master/resources/wow-api/UseAnnotation.png)
