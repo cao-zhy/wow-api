@@ -6,11 +6,13 @@
 
     <groupId>com.github.czy211.wowapi</groupId>
     <artifactId>wow-api</artifactId>
-    <version>4.0.0</version>
+    <version>3.3.0</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -26,14 +28,11 @@
         <resources>
             <resource>
                 <!--把 LICENSE 文件复制到 META-INF 文件夹中-->
-                <directory>${project.basedir}</directory>
+                <directory>${basedir}</directory>
                 <targetPath>META-INF</targetPath>
                 <includes>
                     <include>LICENSE*</include>
                 </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
             </resource>
         </resources>
         <plugins>
@@ -48,7 +47,7 @@
                             <!--在 MANIFEST.MF 文件中添加 Class-Path 属性-->
                             <addClasspath>true</addClasspath>
                             <!--在 MANIFEST.MF 文件中添加 Main-Class 属性-->
-                            <mainClass>com.github.czy211.wowapi.view.MainWindow</mainClass>
+                            <mainClass>com.github.czy211.wowapi.ui.Window</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

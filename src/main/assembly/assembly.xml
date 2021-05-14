@@ -24,14 +24,14 @@
         </fileSet>
         <fileSet>
             <!--把构建目录中的 jar 包复制到 lib 文件夹，这里的 jar 包是通过 maven-jar-plugin 生成的可执行 jar 包-->
-            <directory>${project.build.directory}</directory>
+            <directory>${build.directory}</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}</directory>
+            <directory>${basedir}</directory>
             <includes>
                 <include>LICENSE*</include>
                 <include>README*</include>
