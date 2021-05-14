@@ -305,8 +305,7 @@ public class GlobalFramesPane extends BasePane {
                     insertTab(sb, numTab);
                 }
                 sb.append("},\n");
-                boolean moreTypes = !"".equals(el.attr("inherits")) || !"".equals(el.attr("mixin"));
-                if (own && moreTypes) {
+                if (own) {
                     insertTab(sb, numTab);
                     addTypes(sb, el);
                     insertTab(sb, numTab);
