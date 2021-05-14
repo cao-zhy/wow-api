@@ -38,7 +38,7 @@ public abstract class WikiPane extends BasePane {
             }
             StringBuilder argsToEnd = addFunctions(result, element, list);
             if (functionsToCopy != null) {
-                String fullName = element.selectFirst("a").text();
+                String fullName = element.selectFirst("a[title^=API ]").text();
                 String oldWidgetName = fullName.split(":")[0];
                 String[] widgetNames = functionsToCopy.get(oldWidgetName);
                 if (widgetNames != null) {
@@ -80,8 +80,8 @@ public abstract class WikiPane extends BasePane {
         return parseFormatter.format(LocalDateTime.parse(dateTime, formatter));
     }
     
-    public String getLink(String prefix, Element element, String suffix) {
-        Element link = element.selectFirst("a");
+    public String getLink(String prefix, String suffix, Element element, String query) {
+        Element link = element.selectFirst(query);
         String title = link.attr("title");
         String href = link.attr("href");
         if (!"".equals(title) && !"".equals(href) && !title.endsWith("(page does not exist)")) {
@@ -91,7 +91,8 @@ public abstract class WikiPane extends BasePane {
     }
     
     private StringBuilder addFunctions(StringBuilder sb, Element element, ArrayList<String> list) {
-        Element el = element.selectFirst("a");
+        String linkQuery = "a[title^=API ]";
+        Element el = element.selectFirst(linkQuery);
         String name = el.text();
         
         String namespace = getNamespace(name);
@@ -103,7 +104,7 @@ public abstract class WikiPane extends BasePane {
         String text = element.text();
         String description = getDescription(text);
         
-        String link = getLink("\n---\n--- [", element, "]");
+        String link = getLink("\n---\n--- [", "]", element, linkQuery);
         sb.append("--- ").append(description).append(link).append("\n");
         
         String doc = docs.get(name);

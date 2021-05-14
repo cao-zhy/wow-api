@@ -59,7 +59,7 @@ public class WidgetFunctionsPane extends WikiPane {
     
     @Override
     public void download() {
-        resolve(widgets, "dd:not(:matches(^REMOVED )):has(a[title^=API ]:eq(0))", null, functionsToCopy);
+        resolve(widgets, "dd:not(:matches(^REMOVED)):has(a[title^=API ])", null, functionsToCopy);
     }
     
     @Override
