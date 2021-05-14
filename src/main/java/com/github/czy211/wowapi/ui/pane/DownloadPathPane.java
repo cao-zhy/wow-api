@@ -38,7 +38,7 @@ public class DownloadPathPane extends HBox {
         
         btOpen.setOnAction(event -> {
             try {
-                Desktop.getDesktop().open(new File(downloadPath));
+                Desktop.getDesktop().open(new File(PathUtil.getDownloadPath()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
