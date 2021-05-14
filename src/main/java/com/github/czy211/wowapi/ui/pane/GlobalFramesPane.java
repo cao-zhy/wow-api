@@ -319,13 +319,18 @@ public class GlobalFramesPane extends BasePane {
     private void addTypes(StringBuilder sb, Element element) {
         String tagName = getFrameTagName(element);
         sb.append("---@type ").append(tagName);
+        // intrinsic frame 的 name 和标签名相同，在 templates 中找到 intrinsic frame 并添加它的父类类型
+        Template template = templates.get(tagName);
+        if (template != null) {
+            addParentTypes(sb, template);
+        }
         addTypes(sb, element.attr("mixins").split(", *"));
         if (!"FontString".equals(tagName) && !"Texture".equals(tagName)) {
             String[] inherits = element.attr("inherits").split(", *");
             addTypes(sb, inherits);
             // 添加父类中的 inherits 和 mixins
             for (String inherit : inherits) {
-                Template template = templates.get(inherit);
+                template = templates.get(inherit);
                 if (template != null) {
                     addParentTypes(sb, template);
                 }
