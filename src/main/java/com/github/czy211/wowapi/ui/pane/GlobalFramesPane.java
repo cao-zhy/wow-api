@@ -141,7 +141,7 @@ public class GlobalFramesPane extends BasePane {
         for (String inherit : inherits) {
             Template template = templates.get(inherit);
             if (template != null) {
-                addParentChildFrames(sb, template, prefix);
+                addParentChildFrames(sb, template, frameName);
             }
         }
     }
@@ -159,13 +159,13 @@ public class GlobalFramesPane extends BasePane {
             for (Element element : elements) {
                 addFrame(sb, element, prefix);
             }
-        }
-        String[] inherits = template.getInherits();
-        if (inherits != null) {
-            for (String inherit : inherits) {
-                Template t = templates.get(inherit);
-                if (t != null) {
-                    addParentChildFrames(sb, t, prefix);
+            String[] inherits = template.getInherits();
+            if (inherits != null) {
+                for (String inherit : inherits) {
+                    Template t = templates.get(inherit);
+                    if (t != null) {
+                        addParentChildFrames(sb, t, prefix);
+                    }
                 }
             }
         }
@@ -173,22 +173,19 @@ public class GlobalFramesPane extends BasePane {
     
     private String getFrameName(Element element, String prefix) {
         String name = element.attr("name");
-        int index = 0;
-        while (name.startsWith("$parent")) {
-            Elements parents = element.parents();
-            for (int i = index; i < parents.size(); i++) {
-                String parentName = parents.get(i).attr("name");
-                if (parentName.equals(prefix)) {
-                    return name.replace("$parent", prefix);
-                }
+        if (name.startsWith("$parent")) {
+            for (Element parent : element.parents()) {
+                String parentName = parent.attr("name");
                 if (!"".equals(parentName)) {
-                    name = name.replace("$parent", parentName);
-                    index = i + 1;
-                    break;
+                    if (parentName.startsWith("$parent")) {
+                        name = name.replace("$parent", parentName);
+                    } else {
+                        return name.replace("$parent", prefix);
+                    }
                 }
             }
         }
-        return name.replace("$parent", prefix);
+        return name;
     }
     
     private void addTemplates(File path, StringBuilder result, List<String> list) {
@@ -323,7 +320,7 @@ public class GlobalFramesPane extends BasePane {
         if (template != null) {
             addParentTypes(sb, template);
         }
-        addTypes(sb, element.attr("mixins").split(", *"));
+        addTypes(sb, element.attr("mixin").split(", *"));
         if (!"FontString".equals(tagName) && !"Texture".equals(tagName)) {
             String[] inherits = element.attr("inherits").split(", *");
             addTypes(sb, inherits);
