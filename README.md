@@ -19,7 +19,7 @@
 - Widget_Functions.lua 文件包含了 <https://wowpedia.fandom.com/wiki/Widget_API> 列出的函数。
 - Lua_Functions.lua 文件包含了 <https://wowpedia.fandom.com/wiki/Lua_functions> 列出的函数。
 - Global_Numbers.lua 文件从 <https://github.com/czy211/wow-api/releases> 下载，包含大部分数字常量。
-- Global_Frames.lua 文件解析暴雪接口代码，获取游戏版本号需要连接至 <https://www.townlong-yak.com/framexml/live>，包含了大部分 Frame。（不包括角色选择界面的 Frame
+- Global_Frames.lua 文件解析暴雪接口代码，获取游戏版本号需要连接至 <https://www.townlong-yak.com/framexml/live>，包含了大部分 Frame。（不包括角色选择界面的 Frame）
   > 暴雪接口代码的位置需要选择至 Interface 文件夹。
 - Widget_Hierarchy.png 文件从 <https://wowpedia.fandom.com/wiki/File:Widget_Hierarchy.png> 下载，显示 Widget Hierarchy。
 - Script_Handlers.txt 文件包含了 <https://wowpedia.fandom.com/wiki/Widget_script_handlers> 的内容。
