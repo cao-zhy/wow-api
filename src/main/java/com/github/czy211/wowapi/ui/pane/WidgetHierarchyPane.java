@@ -38,7 +38,8 @@ public class WidgetHierarchyPane extends WikiPane {
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL(downloadUrl).openConnection();
             connected(connection.getContentLengthLong());
-            String filepath = PathUtil.getDownloadPath() + name + "-" + getRemoteVersion() + extension;
+            String filename = name + "-" + getRemoteVersion() + extension;
+            String filepath = PathUtil.getDownloadPath() + filename;
             try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
                  BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(filepath))) {
                 byte[] temp = new byte[8192];
@@ -53,7 +54,7 @@ public class WidgetHierarchyPane extends WikiPane {
                     increaseCurrent(length);
                 }
             }
-            downloadComplete();
+            downloadComplete(filename);
         } catch (IOException e) {
             connectFail(downloadUrl);
             e.printStackTrace();
