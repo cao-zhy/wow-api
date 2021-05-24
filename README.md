@@ -15,6 +15,8 @@
 
 默认下载位置是程序根目录下的 downloads 文件夹，可以点击“选择文件夹”改变下载位置。（建议使用导出暴雪接口代码自动创建的 BlizzardInterfaceCode 文件夹，导出暴雪接口代码见 [其它说明](#导出暴雪接口代码)）
 
+清理按钮用于删除下载文件夹中所有 .old 文件。
+
 - Global_Functions.lua 文件包含了 <https://wowpedia.fandom.com/wiki/World_of_Warcraft_API> 列出的函数。
 - Widget_Functions.lua 文件包含了 <https://wowpedia.fandom.com/wiki/Widget_API> 列出的函数。
 - Lua_Functions.lua 文件包含了 <https://wowpedia.fandom.com/wiki/Lua_functions> 列出的函数。
@@ -65,6 +67,11 @@
 注解的使用请参考 <https://emmylua.github.io/annotation.html>
 
 ## 更新日志
+
+### v3.3.1
+
+- 修复存在最新文件时仍提示可更新的问题
+- 添加删除下载文件夹中所有 .old 文件的功能
 
 ### v3.3.0
 

@@ -42,6 +42,7 @@ public abstract class BasePane extends BorderPane {
     private boolean downloading;
     private boolean checking;
     private Future<?> future;
+    private File oldFile;
     
     public BasePane(String name, String extension, String url) {
         this.name = name;
@@ -89,11 +90,12 @@ public abstract class BasePane extends BorderPane {
     
     public void createFile(StringBuilder sb) {
         try {
-            String filename = PathUtil.getDownloadPath() + name + "-" + getRemoteVersion() + extension;
-            try (PrintWriter writer = new PrintWriter(filename, "UTF-8")) {
+            String filename = name + "-" + getRemoteVersion() + extension;
+            String filepath = PathUtil.getDownloadPath() + filename;
+            try (PrintWriter writer = new PrintWriter(filepath, "UTF-8")) {
                 writer.print(sb);
             }
-            downloadComplete();
+            downloadComplete(filename);
         } catch (IOException e) {
             connectFail(url);
             e.printStackTrace();
@@ -150,10 +152,11 @@ public abstract class BasePane extends BorderPane {
                 sb.append(line).append("\n");
                 increaseCurrent(line.length());
             }
-            String filepath = PathUtil.getDownloadPath() + name + "-" + getRemoteVersion() + extension;
+            String filename = name + "-" + getRemoteVersion() + extension;
+            String filepath = PathUtil.getDownloadPath() + filename;
             try (PrintWriter writer = new PrintWriter(filepath, "UTF-8")) {
                 writer.print(sb);
-                downloadComplete();
+                downloadComplete(filename);
             }
         } catch (IOException e) {
             connectFail(downloadUrl);
@@ -165,7 +168,7 @@ public abstract class BasePane extends BorderPane {
         downloadFile(downloadUrl, null);
     }
     
-    public void downloadComplete() {
+    public void downloadComplete(String filename) {
         downloading = false;
         Platform.runLater(() -> {
             lbStatus.setTextFill(Color.GREEN);
@@ -175,6 +178,14 @@ public abstract class BasePane extends BorderPane {
             bar.setVisible(false);
             updateVersionLabel();
         });
+        if (oldFile != null && !oldFile.getName().equals(filename)) {
+            if (!oldFile.renameTo(new File(oldFile.getAbsolutePath().replace(extension, ".old")))) {
+                Platform.runLater(() -> {
+                    lbStatus.setTextFill(Color.RED);
+                    lbStatus.setText("旧文件重命名失败");
+                });
+            }
+        }
     }
     
     public void updateVersionLabel() {
@@ -262,6 +273,7 @@ public abstract class BasePane extends BorderPane {
                     String filename = file.getName();
                     Matcher m = Pattern.compile(fileRegex).matcher(filename);
                     if (m.find()) {
+                        oldFile = file;
                         return m.group(1);
                     }
                 }
