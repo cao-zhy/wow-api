@@ -24,7 +24,7 @@ public class WidgetFunctionsPane extends WikiPane {
     functionHierarchy.put("LayeredRegion", new String[]{"FontString", "Texture", "MaskTexture", "Line"});
     functionHierarchy.put("Frame", new String[]{"Button", "Model", "ModelScene", "ModelSceneActor", "POIFrame",
         "FogOfWarFrame", "UnitPositionFrame", "ColorSelect", "Cooldown", "GameTooltip", "ScrollFrame", "Slider",
-        "StatusBar", "Minamap", "WorldFrame", "MovieFrame", "Browser", "Checkout", "OffScreenFrame", "EditBox",
+        "StatusBar", "Minimap", "WorldFrame", "MovieFrame", "Browser", "Checkout", "OffScreenFrame", "EditBox",
         "MessageFrame", "SimpleHTML", "ScrollingMessageFrame"});
     functionHierarchy.put("Button", new String[]{"CheckButton", "ItemButton", "EventButton", "ContainedAlertFrame",
         "DropDownToggleButton"});
