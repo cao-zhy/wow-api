@@ -2,75 +2,75 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.czy211.wowapi</groupId>
-    <artifactId>wow-api</artifactId>
-    <version>3.3.1</version>
+  <groupId>com.github.czy211.wowapi</groupId>
+  <artifactId>wow-api</artifactId>
+  <version>3.3.1</version>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.13.1</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.13.1</version>
+    </dependency>
+  </dependencies>
 
-    <build>
-        <!--指定资源文件夹-->
-        <resources>
-            <resource>
-                <!--把 LICENSE 文件复制到 META-INF 文件夹中-->
-                <directory>${basedir}</directory>
-                <targetPath>META-INF</targetPath>
-                <includes>
-                    <include>LICENSE*</include>
-                </includes>
-            </resource>
-        </resources>
-        <plugins>
-            <!--使用 maven-jar-plugin 打包成可执行 jar 包-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <!--在 MANIFEST.MF 文件中添加 Class-Path 属性-->
-                            <addClasspath>true</addClasspath>
-                            <!--在 MANIFEST.MF 文件中添加 Main-Class 属性-->
-                            <mainClass>com.github.czy211.wowapi.ui.Window</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <!--使用 maven-assembly-plugin 插件打包成 zip 包-->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <!--指定资源文件夹-->
+    <resources>
+      <resource>
+        <!--把 LICENSE 文件复制到 META-INF 文件夹中-->
+        <directory>${basedir}</directory>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>LICENSE*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <!--使用 maven-jar-plugin 打包成可执行 jar 包-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <!--在 MANIFEST.MF 文件中添加 Class-Path 属性-->
+              <addClasspath>true</addClasspath>
+              <!--在 MANIFEST.MF 文件中添加 Main-Class 属性-->
+              <mainClass>com.github.czy211.wowapi.ui.Window</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <!--使用 maven-assembly-plugin 插件打包成 zip 包-->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
