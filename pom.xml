@@ -33,6 +33,9 @@
           <include>LICENSE*</include>
         </includes>
       </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
     </resources>
     <plugins>
       <!--使用 maven-jar-plugin 打包成可执行 jar 包-->

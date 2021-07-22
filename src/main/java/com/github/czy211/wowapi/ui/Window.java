@@ -16,9 +16,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -70,8 +70,10 @@ public class Window extends Application {
 
     Scene scene = new Scene(mainPane);
     // 调整进度条高度
-    scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/progress-bar.css"))
-        .toExternalForm());
+    URL cssUrl = getClass().getResource("/css/progress-bar.css");
+    if (cssUrl != null) {
+      scene.getStylesheets().add(cssUrl.toExternalForm());
+    }
 
     ArrayList<Region> lbNames = new ArrayList<>();
     ArrayList<Region> rights = new ArrayList<>();
@@ -122,7 +124,10 @@ public class Window extends Application {
     }));
     primaryStage.setOnCloseRequest(event -> exec.shutdownNow());
     primaryStage.setScene(scene);
-    primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/wow-logo.png"))));
+    InputStream icon = getClass().getResourceAsStream("/wow-logo.png");
+    if (icon != null) {
+      primaryStage.getIcons().add(new Image(icon));
+    }
     primaryStage.setTitle("World of Warcraft API");
     primaryStage.show();
     primaryStage.centerOnScreen();
