@@ -6,9 +6,7 @@ if "%JAVA_HOME%" == "" (
 ) else (
   cd %~dp0
     
-  for %%f in (..\lib\wow-api-*.jar) do (
-    %JAVA_HOME%\bin\java -Dfile.encoding=utf-8 -jar %%f
-  )
+  %JAVA_HOME%\bin\java -Dfile.encoding=utf-8 -jar ..\lib\wow-api-3.3.2.jar
 
   if errorlevel 1 (
     pause
