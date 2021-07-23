@@ -14,7 +14,7 @@ import java.net.URL;
 public class WidgetHierarchyPane extends WikiPane {
   private static final String name = "Widget_Hierarchy";
   private static final String extension = ".png";
-  private static final String url = BASE_URI + "/wiki/File:Widget_Hierarchy.png";
+  private static final String url = BASE_URI + "/wiki/Widget_API";
   private static final WidgetHierarchyPane pane = new WidgetHierarchyPane();
 
   private WidgetHierarchyPane() {
@@ -29,7 +29,7 @@ public class WidgetHierarchyPane extends WikiPane {
   public void download() {
     String downloadUrl = "";
     try {
-      Element element = Jsoup.connect(url).get().selectFirst(".filehistory-selected").selectFirst("a");
+      Element element = Jsoup.connect(url).get().selectFirst("a.image");
       downloadUrl = element.attr("href");
     } catch (IOException e) {
       connectFail(url);
@@ -63,7 +63,7 @@ public class WidgetHierarchyPane extends WikiPane {
 
   @Override
   public String getRemoteVersion() throws IOException {
-    String dateTime = Jsoup.connect(url).get().selectFirst(".filehistory-selected").selectFirst("a").text();
-    return formatDateTime(dateTime, "HH:mm, d MMMM yyyy");
+    String text = Jsoup.connect(url).get().selectFirst("a.image").attr("href");
+    return text.substring(text.length() - 14);
   }
 }

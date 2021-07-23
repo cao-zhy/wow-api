@@ -18,7 +18,7 @@ public class GlobalFunctionsPane extends WikiPane {
 
   @Override
   public void download() {
-    resolve("", "dd:not(:matches(^(UI|PROTECTED|DEPRECATED))):has(a[title^=API ]),span#Classic", "span", null);
+    resolve("", "dd:not(:matches(^(UI|PROTECTED|DEPRECATED))):has([title^=API ]),span#Classic", "span", null);
   }
 
   @Override

@@ -38,7 +38,7 @@ public abstract class WikiPane extends BasePane {
       }
       StringBuilder argsToEnd = addFunctions(result, element, list);
       if (functionsToCopy != null) {
-        String fullName = element.selectFirst("a[title^=API ]").text();
+        String fullName = element.selectFirst("[title^=API ]").text();
         String oldWidgetName = fullName.split(":")[0];
         String[] widgetNames = functionsToCopy.get(oldWidgetName);
         if (widgetNames != null) {
@@ -68,9 +68,8 @@ public abstract class WikiPane extends BasePane {
   }
 
   public String getPageDateTime() throws IOException {
-    Element element = Jsoup.connect(getUrl()).get().selectFirst("#footer-info-lastmod");
-    String dateTime = element.text().substring(29);
-    return formatDateTime(dateTime, "d MMMM yyyy, 'at' HH:mm.");
+    Element element = Jsoup.connect(getUrl() + "?action=history").get().selectFirst("a.mw-changeslist-date");
+    return formatDateTime(element.text(), "HH:mm, d MMMM yyyy");
   }
 
   public String formatDateTime(String dateTime, String pattern) {
@@ -81,17 +80,17 @@ public abstract class WikiPane extends BasePane {
 
   public String getLink(String prefix, String suffix, Element element, String query) {
     Element link = element.selectFirst(query);
-    String title = link.attr("title");
-    String href = link.attr("href");
-    if (!"".equals(title) && !"".equals(href) && !title.endsWith("(page does not exist)")) {
-      return prefix + BASE_URI + href + suffix;
+    if ("a".equals(link.tagName())) {
+      String href = link.attr("href");
+      if (!"".equals(href)) {
+        return prefix + BASE_URI + href + suffix;
+      }
     }
     return "";
   }
 
   private StringBuilder addFunctions(StringBuilder sb, Element element, ArrayList<String> list) {
-    String linkQuery = "a[title^=API ]";
-    Element el = element.selectFirst(linkQuery);
+    Element el = element.selectFirst("[title^=API ]");
     String name = el.text();
 
     String namespace = getNamespace(name);
@@ -103,7 +102,7 @@ public abstract class WikiPane extends BasePane {
     String text = element.text();
     String description = getDescription(text);
 
-    String link = getLink("\n---\n--- [", "]", element, linkQuery);
+    String link = getLink("\n---\n--- [", "]", element, "[title^=API ]");
     sb.append("--- ").append(description).append(link).append("\n");
 
     String doc = docs.get(name);

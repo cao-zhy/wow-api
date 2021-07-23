@@ -18,7 +18,7 @@ public class LuaFunctionsPane extends WikiPane {
 
   @Override
   public void download() {
-    resolve("", "dd:has(a[title^=API ]):not(:matches(deprecated)),span#Coroutine_Functions", "span", null);
+    resolve("", "dd:has([title^=API ]):not(:matches(deprecated)),span#Coroutine_Functions", "span", null);
   }
 
   @Override

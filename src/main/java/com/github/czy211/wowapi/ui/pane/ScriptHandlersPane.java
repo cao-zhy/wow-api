@@ -22,8 +22,8 @@ public class ScriptHandlersPane extends WikiPane {
   @Override
   public void download() {
     StringBuilder result = new StringBuilder();
-    Elements elements = connect("span.mw-headline:not(#Widget_API,#Widget_hierarchy,#Example,#References),dd:has"
-        + "(a[title^=UIHANDLER ])");
+    Elements elements = connect("span.mw-headline:not(#Widget_API,#Widget_hierarchy,#Example,#References)," 
+        + "dd:has([title^=UIHANDLER ]),li:has([title^=UIHANDLER ])");
     for (Element element : elements) {
       if (Thread.currentThread().isInterrupted()) {
         canceled();
@@ -36,7 +36,7 @@ public class ScriptHandlersPane extends WikiPane {
         }
         result.append(text).append(" = {\n");
       } else {
-        String link = getLink("(", ")", element, "a[title^=UTHANDLER ]");
+        String link = getLink("(", ")", element, "[title^=UIHANDLER ]");
         result.append("    ").append(text).append(link).append("\n");
       }
       increaseCurrent(1);
