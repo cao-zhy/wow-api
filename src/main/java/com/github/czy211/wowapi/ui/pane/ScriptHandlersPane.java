@@ -37,7 +37,7 @@ public class ScriptHandlersPane extends WikiPane {
         result.append(text).append(" = {\n");
       } else {
         String link = getLink("(", ")", element, "[title^=UIHANDLER ]");
-        result.append("    ").append(text).append(link).append("\n");
+        result.append("  ").append(text).append(link).append("\n");
       }
       increaseCurrent(1);
     }

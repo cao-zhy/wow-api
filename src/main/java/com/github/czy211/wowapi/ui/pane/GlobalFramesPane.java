@@ -421,7 +421,7 @@ public class GlobalFramesPane extends BasePane {
 
   private void insertTab(StringBuilder sb, int num) {
     for (int i = 0; i < num; i++) {
-      sb.append("    ");
+      sb.append("  ");
     }
   }
 
